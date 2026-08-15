@@ -1,541 +1,296 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claim System - Dashboard (收支與報帳系統)</title>
-  
-  <!-- Firebase SDK (v8.10.1) -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-  
-  <!-- 匯出與壓縮函式庫 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  
+  <title>專案與教學知識庫 - Dashboard</title>
   <style>
     :root {
-      --bg-main: #f4f6f8;
+      --bg-main: #f8fafc;
+      --sidebar-bg: #0f172a;
+      --sidebar-text: #94a3b8;
+      --sidebar-hover: #1e293b;
+      --sidebar-active: #007aff;
       --card-bg: #ffffff;
-      --primary: #007bff;
-      --text-main: #333333;
+      --primary: #007aff;
+      --text-main: #1e293b;
       --border-color: #e2e8f0;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg-main); padding: 20px; color: var(--text-main); }
-    
-    .container { max-width: 650px; margin: auto; background: white; padding: 24px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    label { font-size: 14px; font-weight: 600; color: #555; display: block; margin-top: 12px; margin-bottom: 4px; }
-    input, select, button { width: 100%; padding: 10px 12px; margin: 4px 0 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-    input:focus, select:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 2px rgba(0,123,255,0.2); }
-    input:disabled { background-color: #e9ecef; cursor: not-allowed; color: #6c757d; }
-    
-    .card { border: 1px solid #e2e8f0; padding: 16px; margin-top: 14px; background: #fff; border-radius: 6px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .btn-group button { width: auto; padding: 6px 12px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
-    .btn-group button:hover { opacity: 0.9; }
-    .btn-del { background: #dc3545; color: white; }
-    
-    .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 16px; }
-    .header-bar h2 { margin: 0; font-size: 20px; color: #222; }
-    .logout-btn { width: auto; background: #6c757d; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; margin: 0; }
-    .logout-btn:hover { background: #5a6268; }
-    
-    .export-btn-group { display: flex; flex-wrap: wrap; gap: 10px; }
-    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 15px 0 20px; }
-    .summary-box { padding: 12px; border-radius: 6px; text-align: center; color: white; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-    .bg-in { background-color: #28a745; }
-    .bg-out { background-color: #dc3545; }
-    .bg-bal { background-color: #007bff; }
-    .bg-warn { background-color: #fd7e14; }
-    .summary-box span { display: block; font-size: 12px; font-weight: normal; margin-bottom: 4px; opacity: 0.9; }
-    .summary-box div { font-size: 18px; }
-    
-    .badge { padding: 3px 8px; border-radius: 4px; color: white; font-size: 12px; font-weight: bold; display: inline-block; margin-right: 6px; }
-    .badge-in { background: #28a745; }
-    .badge-out { background: #dc3545; }
-    .badge-status { background: #ffc107; color: #333; }
-    
-    .currency-group { display: flex; gap: 10px; }
-    .currency-group select { width: 35%; }
-    .currency-group input { width: 65%; }
-    .user-tag { font-size: 13px; color: #007bff; background: #e7f1ff; padding: 2px 8px; border-radius: 12px; margin-left: 8px; font-weight: bold; }
-    .empty-tip { text-align: center; color: #888; padding: 30px 0; font-size: 14px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      overflow: hidden;
+    }
 
-    @media (max-width: 600px) {
-      body { padding: 10px; }
-      .container { padding: 16px; }
-      .currency-group { flex-direction: column; gap: 0; }
-      .currency-group select, .currency-group input { width: 100%; }
+    /* 手機版頂部列 */
+    .mobile-header {
+      display: none;
+      height: 56px;
+      background-color: var(--sidebar-bg);
+      color: white;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .mobile-header h2 { font-size: 16px; font-weight: 700; color: #f8fafc; }
+
+    .menu-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* 左側邊欄 Sidebar */
+    .sidebar {
+      width: 280px;
+      background-color: var(--sidebar-bg);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 300;
+      overflow-y: auto;
+      border-right: 1px solid #1e293b;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-header h2 { font-size: 18px; color: #f8fafc; font-weight: 800; }
+    .sidebar-header p { font-size: 12px; color: var(--sidebar-text); margin-top: 4px; }
+
+    .close-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--sidebar-text);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .nav-list { list-style: none; padding: 16px 12px; }
+    .nav-item { margin-bottom: 6px; }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: var(--sidebar-text);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover { background-color: var(--sidebar-hover); color: #f8fafc; }
+    .nav-btn.active {
+      background-color: var(--sidebar-active);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    }
+
+    .home-link-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 12px;
+      text-decoration: none;
+    }
+
+    .btn-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      color: inherit;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 250;
+    }
+
+    /* 右側主顯示區域 (透過 iframe 載入獨立章節) */
+    .main-wrapper {
+      margin-left: 280px;
+      flex: 1;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    iframe#content-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-header { display: flex; }
+      .close-btn { display: block; }
+      
+      .sidebar {
+        transform: translateX(-100%);
+        top: 0;
+        width: 260px;
+      }
+
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+
+      .main-wrapper {
+        margin-left: 0;
+        padding-top: 56px;
+        height: calc(100vh - 56px);
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header-bar">
-    <div>
-      <h2 style="display:inline-block; vertical-align:middle;">收支與報帳系統</h2>
-      <span id="roleBadge" class="user-tag" style="display:none; vertical-align:middle;"></span>
+  <!-- 手機版頂部工具列 -->
+  <header class="mobile-header">
+    <h2>📂 專案與教學庫</h2>
+    <button class="menu-toggle-btn" onclick="toggleSidebar()">☰ 選單</button>
+  </header>
+
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- 左側選單 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div>
+        <h2>📂 專案與教學庫</h2>
+        <p>Dashboard Hub Center</p>
+      </div>
+      <button class="close-btn" onclick="toggleSidebar()">✕</button>
     </div>
-    <button class="logout-btn" onclick="logout()">登出系統</button>
-  </div>
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="index.html" class="nav-btn home-link-btn">
+          <span>🏠 返回首頁 Index</span>
+          <span class="btn-badge">EXIT</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn active" onclick="loadPage('pages/ch1.html', this)">
+          <span>Chapter 1: 資安白皮書</span>
+          <span class="btn-badge">現有</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch2.html', this)">
+          <span>Chapter 2: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch3.html', this)">
+          <span>Chapter 3: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch4.html', this)">
+          <span>Chapter 4: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch5.html', this)">
+          <span>Chapter 5: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch6.html', this)">
+          <span>Chapter 6: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch7.html', this)">
+          <span>Chapter 7: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch8.html', this)">
+          <span>Chapter 8: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch9.html', this)">
+          <span>Chapter 9: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch10.html', this)">
+          <span>Chapter 10: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+    </ul>
+  </aside>
 
-  <!-- 管理員專用：統計看板 -->
-  <div id="summarySection" class="summary-grid" style="display:none;">
-    <div class="summary-box bg-in"><span>總收入 (已結算 HKD)</span><div id="stat-in">$0.00</div></div>
-    <div class="summary-box bg-out"><span>總支出 (已結算 HKD)</span><div id="stat-out">$0.00</div></div>
-    <div class="summary-box bg-bal"><span>當前結餘 (HKD)</span><div id="stat-bal">$0.00</div></div>
-    <div class="summary-box bg-warn"><span>未 Claim 總額 (約 HKD)</span><div id="stat-unclaimed">$0.00</div></div>
-  </div>
-  
-  <label>交易類型：</label>
-  <select id="typeInput" onchange="toggleTypeUI()">
-    <option value="out">支出 (報帳/記帳)</option>
-    <option value="in" id="optIncome" style="display:none;">收入 (入數/存入)</option>
-  </select>
+  <!-- 右側內嵌獨立頁面 -->
+  <main class="main-wrapper">
+    <iframe id="content-frame" src="pages/ch1.html"></iframe>
+  </main>
 
-  <label>填寫人姓名：</label>
-  <input type="text" id="userInput" disabled placeholder="驗證身分中...">
-
-  <label>日期：</label>
-  <input type="date" id="dateInput">
-
-  <label>分類：</label>
-  <input list="catList" id="catInput" placeholder="請選擇或自行輸入...">
-  <datalist id="catList">
-    <option value="淘寶"><option value="淘寶運費"><option value="交通"><option value="餐飲"><option value="文具"><option value="紙巾"><option value="紙杯"><option value="生日"><option value="衣紙"><option value="油"><option value="蠟燭"><option value="香品"><option value="資金補充"><option value="其他收入"><option value="雜費">
-  </datalist>
-
-  <label>金額與貨幣：</label>
-  <div class="currency-group">
-    <select id="currencyInput" onchange="toggleExchangeRateUI()">
-      <option value="HKD">港幣 (HKD)</option>
-      <option value="RMB">人民幣 (RMB)</option>
-    </select>
-    <input type="number" id="priceInput" placeholder="輸入金額" step="0.01" min="0.01">
-  </div>
-
-  <div id="rateBox" style="display:none; margin-top: 5px;">
-    <label style="color:#d9534f; font-weight:bold;">RMB 換算 HKD 匯率：</label>
-    <input type="number" id="rateInput" value="1.1" step="0.001" placeholder="例如: 1.1">
-  </div>
-
-  <label id="fileLabel">上載收據圖片 (必填)：</label>
-  <input type="file" id="fileInput" accept="image/*">
-
-  <button onclick="submitClaim()" id="subBtn" style="background:#007bff; color:white; font-weight:bold; margin-top:14px; cursor:pointer;">提交紀錄 (預設為待審核)</button>
-
-  <!-- 管理員專用：匯出與管理 -->
-  <div id="exportSection" style="display:none;">
-    <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-    <h3 style="font-size:16px; margin-bottom:10px;">報表與圖片批次下載</h3>
-    <label>開始日期 (留空預設匯出全部)：</label><input type="date" id="startD">
-    <label>結束日期 (留空預設匯出全部)：</label><input type="date" id="endD">
-    <div class="export-btn-group" style="margin-top:8px;">
-      <button onclick="exportToExcel('all')" style="background:#28a745; color:white; font-weight:bold; width:auto; cursor:pointer;">下載總收支 Excel</button>
-      <button onclick="exportToExcel('taobao')" style="background:#ff5000; color:white; font-weight:bold; width:auto; cursor:pointer;">下載淘寶專用 Excel</button>
-      <button onclick="exportImagesZip()" id="zipBtn" style="background:#17a2b8; color:white; font-weight:bold; width:auto; cursor:pointer;">下載圖片 ZIP 包</button>
-    </div>
-    <button onclick="clearAllData()" style="background:#721c24; color:white; font-weight:bold; margin-top:15px; cursor:pointer;">⚠️ 強制清空資料庫所有紀錄</button>
-  </div>
-
-  <hr style="margin:24px 0; border:0; border-top:1px solid #eee;">
-  <h3 style="font-size:16px; margin-bottom:12px;">歷史紀錄</h3>
-  <div id="list"><div class="empty-tip">讀取中...</div></div>
-</div>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBRmm7eV-Yw0LG0Y2mFwcnt5pew2Y1as1w",
-    authDomain: "new-claim-dcc61.firebaseapp.com",
-    projectId: "new-claim-dcc61",
-    storageBucket: "new-claim-dcc61.firebasestorage.app",
-    messagingSenderId: "589308572721",
-    appId: "1:589308572721:web:4da5c6d74711134f0dd110",
-    measurementId: "G-RBJV5E2VKL"
-  };
-  
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  const storage = firebase.storage();
-
-  const ADMIN_EMAIL = "shanho001@gmail.com";
-
-  let currentUserRole = 'member';
-  let currentUserName = '';
-  let currentUserEmail = '';
-  let currentUserUid = '';
-  let unsubscribeListener = null;
-
-  document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
-
-  auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      if (unsubscribeListener) unsubscribeListener();
-      window.location.href = "index.html";
-      return;
-    }
-    
-    currentUserUid = user.uid;
-    currentUserEmail = (user.email || '').toLowerCase();
-    
-    if (currentUserEmail === ADMIN_EMAIL.toLowerCase()) {
-      currentUserRole = 'admin';
-      currentUserName = '系統管理員';
-    } else {
-      currentUserRole = 'member';
-      currentUserName = currentUserEmail;
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
     }
 
-    try {
-      const userDoc = await db.collection('users').doc(currentUserEmail).get();
-      if (userDoc.exists) {
-        const uData = userDoc.data();
-        if (uData.role) currentUserRole = uData.role;
-        if (uData.userName) currentUserName = uData.userName;
-      }
-    } catch (e) {
-      console.warn("讀取 Profile 警告:", e.message);
-    }
-
-    document.getElementById('userInput').value = currentUserName;
-    const badge = document.getElementById('roleBadge');
-    badge.style.display = 'inline-block';
-    badge.innerText = currentUserRole === 'admin' ? '管理員' : '會員';
-
-    if (currentUserRole === 'admin') {
-      document.getElementById('summarySection').style.display = 'grid';
-      document.getElementById('exportSection').style.display = 'block';
-      document.getElementById('optIncome').style.display = 'block';
-    }
-
-    initDataListener();
-  });
-
-  function logout() { 
-    if (unsubscribeListener) unsubscribeListener();
-    auth.signOut().then(() => {
-      sessionStorage.clear(); 
-      window.location.href = "index.html"; 
-    });
-  }
-
-  function escapeHtml(text) {
-    if (!text) return '';
-    return String(text)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  function toggleTypeUI() {
-    const type = document.getElementById('typeInput').value;
-    document.getElementById('fileLabel').innerText = (type === 'in') ? "上載入數紙/證明圖片 (可選)：" : "上載收據圖片 (必填)：";
-  }
-
-  function toggleExchangeRateUI() {
-    const curr = document.getElementById('currencyInput').value;
-    document.getElementById('rateBox').style.display = (curr === 'RMB') ? 'block' : 'none';
-  }
-
-  async function submitClaim() {
-    const type = document.getElementById('typeInput').value;
-    const d = document.getElementById('dateInput').value;
-    const c = document.getElementById('catInput').value.trim();
-    const p = parseFloat(document.getElementById('priceInput').value);
-    const currency = document.getElementById('currencyInput').value;
-    const rate = Number(document.getElementById('rateInput').value) || 1.1;
-    const f = document.getElementById('fileInput').files[0];
-
-    if (!d || !c || isNaN(p) || p <= 0) {
-      return alert("請填寫完整的日期、分類與有效金額（必須大於 0）！");
-    }
-    if (type === 'out' && !f) {
-      return alert("支出記錄請務必提供收據圖片！");
-    }
-    
-    const subBtn = document.getElementById('subBtn');
-    subBtn.disabled = true; subBtn.innerText = "處理上傳中...";
-    
-    let url = "";
-    let fileName = "";
-    let storagePath = "";
-    
-    if (f) {
-      if (f.size > 10 * 1024 * 1024) {
-        alert("圖片檔案過大，請選擇小於 10MB 的圖片！");
-        subBtn.disabled = false; subBtn.innerText = "提交紀錄 (預設為待審核)";
-        return;
-      }
-
-      const dateObj = new Date(d);
-      const prefix = type === 'in' ? '入數' : c;
-      const cleanPrefix = prefix.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, "");
-      const ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
-      fileName = `${String(dateObj.getFullYear()).slice(-2)}${String(dateObj.getMonth()+1).padStart(2,'0')}${String(dateObj.getDate()).padStart(2,'0')}${cleanPrefix}${Math.round(p)}_${Date.now()}.${ext}`;
+    function loadPage(pageUrl, btnElement) {
+      document.getElementById('content-frame').src = pageUrl;
       
-      // 依 UID 目錄隔離存放
-      storagePath = `claims/${currentUserUid}/${fileName}`;
-      try {
-        const ref = storage.ref(storagePath);
-        await ref.put(f);
-        url = await ref.getDownloadURL();
-      } catch (err) { 
-        alert("圖片上載失敗: " + err.message); 
-        subBtn.disabled = false; subBtn.innerText = "提交紀錄 (預設為待審核)";
-        return; 
+      const allBtns = document.querySelectorAll('.nav-btn');
+      allBtns.forEach(btn => btn.classList.remove('active'));
+
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+
+      if (window.innerWidth <= 768) {
+        toggleSidebar();
       }
     }
-
-    try {
-      await db.collection('claims').add({ 
-        type, 
-        userId: currentUserUid,
-        userName: currentUserName, 
-        userEmail: currentUserEmail,
-        date: d, 
-        category: c, 
-        price: Number(p), 
-        currency, 
-        rate: currency === 'RMB' ? rate : 1, 
-        url, 
-        name: fileName, 
-        storagePath: storagePath,
-        status: 'unclaimed', 
-        createdAt: firebase.firestore.FieldValue.serverTimestamp() 
-      });
-      alert("🎉 提交成功！已進入待審核列表。"); 
-      
-      document.getElementById('priceInput').value = '';
-      document.getElementById('catInput').value = '';
-      document.getElementById('fileInput').value = '';
-    } catch (err) { 
-      alert("提交失敗: " + err.message); 
-    } finally {
-      subBtn.disabled = false; subBtn.innerText = "提交紀錄 (預設為待審核)";
-    }
-  }
-
-  async function markAsClaimed(id) {
-    if (currentUserRole !== 'admin') return alert("權限不足！只有管理員可操作！");
-    if (!confirm("確定將此單據標記為「已 Claim / 已入帳」？")) return;
-    try { 
-      await db.collection('claims').doc(id).update({ status: 'claimed' }); 
-    } catch (e) { 
-      alert("操作失敗：" + e.message); 
-    }
-  }
-
-  function toggleImg(id) {
-    const el = document.getElementById('img-' + id);
-    if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-  }
-
-  async function downloadImg(url, name) {
-    try {
-      const res = await fetch(url);
-      const blob = await res.blob();
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = name || 'receipt.jpg';
-      a.click();
-    } catch (e) { alert("下載失敗: " + e.message); }
-  }
-
-  async function clearAllData() {
-    if (currentUserRole !== 'admin') return alert("權限不足！");
-    if (prompt("⚠️ 此操作不可恢復！請輸入「DELETE」確認清空資料庫所有紀錄：") !== 'DELETE') return;
-    try {
-      const snap = await db.collection('claims').get();
-      await Promise.all(snap.docs.map(async doc => {
-        const data = doc.data();
-        const targetPath = data.storagePath || (data.name ? `claims/${data.userId || currentUserUid}/${data.name}` : null);
-        if (targetPath) {
-          try { await storage.ref(targetPath).delete(); } catch(e){}
-        }
-        return db.collection('claims').doc(doc.id).delete();
-      }));
-      alert("資料庫紀錄已全部清空！");
-    } catch (e) { alert("清空失敗：" + e.message); }
-  }
-
-  function initDataListener() {
-    if (unsubscribeListener) unsubscribeListener();
-
-    let queryRef;
-    if (currentUserRole === 'admin') {
-      queryRef = db.collection('claims');
-    } else {
-      queryRef = db.collection('claims').where("userEmail", "==", currentUserEmail);
-    }
-
-    unsubscribeListener = queryRef.onSnapshot(snap => {
-      const list = document.getElementById('list');
-      list.innerHTML = '';
-      
-      let totalInHKD = 0, totalOutHKD = 0, totalUnclaimedHKD = 0;
-      const docsArr = [];
-      
-      snap.forEach(doc => { 
-        docsArr.push({ id: doc.id, ...doc.data() }); 
-      });
-      
-      if (docsArr.length === 0) {
-        list.innerHTML = '<div class="empty-tip">暫無相關單據紀錄</div>';
-        if (currentUserRole === 'admin') {
-          document.getElementById('stat-in').innerText = '$0.00';
-          document.getElementById('stat-out').innerText = '$0.00';
-          document.getElementById('stat-bal').innerText = '$0.00';
-          document.getElementById('stat-unclaimed').innerText = '$0.00';
-        }
-        return;
-      }
-
-      docsArr.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-      docsArr.forEach(d => {
-        const isIncome = d.type === 'in';
-        const rawPrice = Number(d.price) || 0;
-        const currency = d.currency || 'HKD';
-        const rate = Number(d.rate) || 1;
-        const hkdPrice = currency === 'RMB' ? Math.round(rawPrice * rate * 100) / 100 : rawPrice;
-        const isUnclaimed = d.status === 'unclaimed';
-        
-        if (isUnclaimed) {
-          totalUnclaimedHKD += hkdPrice;
-        } else {
-          if (isIncome) totalInHKD += hkdPrice; 
-          else totalOutHKD += hkdPrice; 
-        }
-
-        let priceDisplay = `${currency === 'RMB' ? '¥' : '$'}${rawPrice.toFixed(2)}`;
-        if (currency === 'RMB') priceDisplay += ` <small>(HKD $${hkdPrice.toFixed(2)})</small>`;
-
-        const safeUserName = escapeHtml(d.userName || '未知');
-        const safeCategory = escapeHtml(d.category || '未分類');
-        const safeDate = escapeHtml(d.date || '未填寫');
-        const safeFileName = escapeHtml(d.name || '');
-
-        list.innerHTML += `
-          <div class="card" style="border-left: 5px solid ${isUnclaimed ? '#ffc107' : '#28a745'};">
-            <p style="margin: 0 0 8px 0; line-height: 1.5;">
-              ${isUnclaimed 
-                ? '<span class="badge badge-status">待審核</span>' 
-                : '<span class="badge badge-in">已入帳 (HKD $' + hkdPrice.toFixed(2) + ')</span>'
-              }
-              <strong>日期：</strong> ${safeDate} | <strong>經辦人：</strong> ${safeUserName} | <strong>分類：</strong> ${safeCategory} | <strong>金額：</strong> ${isIncome ? '+' : '-'}${priceDisplay}
-            </p>
-            <div class="btn-group">
-              ${isUnclaimed 
-                ? (currentUserRole === 'admin' 
-                    ? `<button style="background:#ffc107; color:#000;" onclick="markAsClaimed('${d.id}')">轉換為「已 Claim」</button>` 
-                    : `<button disabled style="background:#e2e8f0; color:#888;">待管理員審核</button>`)
-                : `<button disabled style="background:#e2e8f0; color:#888;">已結算</button>`
-              }
-              ${d.url ? `<button style="background:#17a2b8; color:white;" onclick="toggleImg('${d.id}')">查看收據</button><button style="background:#007bff; color:white;" onclick="downloadImg('${d.url}', '${safeFileName}')">下載圖片</button>` : ''}
-              ${(currentUserRole === 'admin' || (d.userEmail === currentUserEmail && isUnclaimed)) ? `<button onclick="del('${d.id}')" class="btn-del">刪除</button>` : ''}
-            </div>
-            ${d.url ? `<img id="img-${d.id}" src="${d.url}" style="display:none; width:100%; max-height:400px; object-fit:contain; margin-top:10px; border-radius:4px; border:1px solid #ddd;">` : ''}
-          </div>
-        `;
-      });
-
-      if (currentUserRole === 'admin') {
-        document.getElementById('stat-in').innerText = `$${totalInHKD.toFixed(2)}`;
-        document.getElementById('stat-out').innerText = `$${totalOutHKD.toFixed(2)}`;
-        document.getElementById('stat-bal').innerText = `$${(totalInHKD - totalOutHKD).toFixed(2)}`;
-        document.getElementById('stat-unclaimed').innerText = `$${totalUnclaimedHKD.toFixed(2)}`;
-      }
-    }, error => {
-      console.error("監聽單據失敗:", error);
-      document.getElementById('list').innerHTML = `<div class="empty-tip" style="color:red;">讀取資料失敗：${escapeHtml(error.message)}</div>`;
-    });
-  }
-
-  async function del(id) {
-    if(!confirm("確定要刪除這筆紀錄？")) return;
-    try { 
-      const docSnap = await db.collection('claims').doc(id).get();
-      if (docSnap.exists) {
-        const data = docSnap.data();
-        if (currentUserRole !== 'admin' && (data.userEmail !== currentUserEmail || data.status !== 'unclaimed')) {
-          return alert("權限不足：您只能刪除自己尚未審核 (待審核) 的單據！");
-        }
-        
-        await db.collection('claims').doc(id).delete(); 
-        
-        const targetPath = data.storagePath || (data.name ? `claims/${data.userId || currentUserUid}/${data.name}` : null);
-        if (targetPath) {
-          try { await storage.ref(targetPath).delete(); } catch(e){}
-        }
-      }
-    } catch (e) { alert("刪除失敗：" + e.message); }
-  }
-
-  async function exportToExcel(mode = 'all') {
-    if (currentUserRole !== 'admin') return alert("權限不足！");
-    const s = document.getElementById('startD').value, e = document.getElementById('endD').value;
-    
-    try {
-      let query = db.collection('claims');
-      if (s && e) {
-        query = query.where("date", ">=", s).where("date", "<=", e);
-      }
-      const snap = await query.get();
-      let records = [];
-      snap.forEach(doc => records.push(doc.data()));
-      
-      if (mode === 'taobao') {
-        records = records.filter(d => d.category && d.category.includes('淘寶'));
-        if (records.length === 0) return alert("無淘寶相關單據！");
-      }
-
-      records.sort((a, b) => new Date(a.date) - new Date(b.date));
-      const rows = [["狀態", "日期", "經辦人", "類型", "分類", "金額", "幣別", "匯率", "HKD金額", "檔名"]];
-      records.forEach(d => {
-        const isUnclaimed = d.status === 'unclaimed';
-        const hkdAmt = (!isUnclaimed || currentUserRole === 'admin') ? (d.currency === 'RMB' ? Math.round(d.price * d.rate * 100) / 100 : d.price) : 0;
-        rows.push([isUnclaimed ? "待審核" : "已入帳", d.date, d.userName, d.type, d.category, d.price, d.currency, d.rate, hkdAmt, d.name]);
-      });
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), "報表");
-      XLSX.writeFile(wb, `${mode}_export.xlsx`);
-    } catch (err) { alert("匯出失敗：" + err.message); }
-  }
-
-  async function exportImagesZip() {
-    if (currentUserRole !== 'admin') return alert("權限不足！");
-    const s = document.getElementById('startD').value, e = document.getElementById('endD').value;
-    const zipBtn = document.getElementById('zipBtn');
-    zipBtn.innerText = "打包中..."; zipBtn.disabled = true;
-    try {
-      let query = db.collection('claims');
-      if (s && e) {
-        query = query.where("date", ">=", s).where("date", "<=", e);
-      }
-      const snap = await query.get();
-      const zip = new JSZip();
-      await Promise.all(snap.docs.map(async doc => {
-        const d = doc.data();
-        if (d.url) { 
-          try {
-            const res = await fetch(d.url); 
-            zip.file(d.name || 'receipt.jpg', await res.blob()); 
-          } catch(err){}
-        }
-      }));
-      saveAs(await zip.generateAsync({ type: "blob" }), "Receipts.zip");
-    } catch (e) { alert("下載 ZIP 失敗：" + e.message); } finally { zipBtn.innerText = "下載圖片 ZIP 包"; zipBtn.disabled = false; }
-  }
-</script>
+  </script>
 </body>
 </html>

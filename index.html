@@ -3,118 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>專案與教學知識庫 - 首頁</title>
+  <title>THE DIGITAL VAULT - 專案與教學知識庫</title>
   <style>
     :root {
-      --bg-color: #0f172a;
-      --card-bg: rgba(255, 255, 255, 0.05);
+      --bg-color: #080d1a;
+      --card-bg: rgba(15, 23, 42, 0.65);
       --primary: #007aff;
-      --primary-hover: #005bb5;
+      --primary-glow: rgba(0, 122, 255, 0.4);
       --text-main: #ffffff;
       --text-muted: #94a3b8;
-      --border-color: rgba(255, 255, 255, 0.1);
+      --border-color: rgba(255, 255, 255, 0.12);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      background-color: var(--bg-color);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 20px;
+      overflow: hidden;
+      position: relative;
     }
 
+    /* 🌟 動態呼吸圓形光影特效 (Glowing Circles) */
+    .bg-circle-1 {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 122, 255, 0.35) 0%, rgba(0,0,0,0) 70%);
+      top: 10%;
+      left: 15%;
+      z-index: 1;
+      animation: pulseCircle1 8s ease-in-out infinite alternate;
+    }
+
+    .bg-circle-2 {
+      position: absolute;
+      width: 550px;
+      height: 550px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(0,0,0,0) 70%);
+      bottom: 5%;
+      right: 10%;
+      z-index: 1;
+      animation: pulseCircle2 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseCircle1 {
+      0% { transform: scale(0.85) translate(0, 0); opacity: 0.6; }
+      100% { transform: scale(1.2) translate(30px, -20px); opacity: 0.9; }
+    }
+
+    @keyframes pulseCircle2 {
+      0% { transform: scale(0.9) translate(0, 0); opacity: 0.5; }
+      100% { transform: scale(1.25) translate(-40px, 30px); opacity: 0.85; }
+    }
+
+    /* 門面主要卡片容器 */
     .cover-container {
+      position: relative;
+      z-index: 10;
       max-width: 680px;
+      width: 100%;
       text-align: center;
-      animation: floatEffect 5s ease-in-out infinite;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 48px 36px;
+      border-radius: 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: floatContainer 6s ease-in-out infinite;
     }
 
-    @keyframes floatEffect {
+    @keyframes floatContainer {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-10px); }
     }
 
     .cover-badge {
       display: inline-block;
-      background: rgba(56, 189, 248, 0.15);
+      background: rgba(56, 189, 248, 0.12);
       color: #38bdf8;
       border: 1px solid rgba(56, 189, 248, 0.3);
-      padding: 6px 16px;
-      border-radius: 20px;
+      padding: 6px 18px;
+      border-radius: 30px;
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 1.5px;
-      margin-bottom: 20px;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
     }
 
     .cover-title {
       font-size: 38px;
       font-weight: 800;
       line-height: 1.25;
-      margin-bottom: 16px;
-      background: linear-gradient(90deg, #ffffff, #38bdf8, #60a5fa);
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #ffffff 0%, #38bdf8 60%, #60a5fa 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .cover-slogan {
-      font-size: 18px;
+      font-size: 17px;
       color: var(--text-muted);
-      margin-bottom: 28px;
+      margin-bottom: 32px;
       line-height: 1.6;
-      font-weight: 500;
     }
 
     .cover-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      padding: 26px;
-      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 24px;
+      border-radius: 18px;
       font-size: 15px;
       color: #cbd5e1;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
       text-align: left;
       line-height: 1.7;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    .login-placeholder-box {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px dashed var(--border-color);
-      font-size: 12px;
-      color: #64748b;
-    }
-
-    .start-btn {
-      background: linear-gradient(90deg, #007aff, #005bb5);
-      color: white;
-      border: none;
-      padding: 15px 42px;
-      border-radius: 30px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0, 122, 255, 0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
-      text-decoration: none;
+    /* 🔘 呼吸放大按鈕 */
+    .btn-wrapper {
+      position: relative;
       display: inline-block;
     }
 
+    .start-btn {
+      position: relative;
+      z-index: 2;
+      background: linear-gradient(90deg, #007aff, #005bb5);
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      border-radius: 40px;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 25px var(--primary-glow);
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
     .start-btn:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 25px rgba(0, 122, 255, 0.6);
+      transform: scale(1.06);
+      box-shadow: 0 8px 35px rgba(0, 122, 255, 0.7);
+    }
+
+    .btn-ripple {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 100%; height: 100%;
+      background: var(--primary);
+      border-radius: 40px;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      opacity: 0.6;
+      animation: rippleEffect 2.5s infinite;
+    }
+
+    @keyframes rippleEffect {
+      0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.8; }
+      100% { transform: translate(-50%, -50%) scale(1.35); opacity: 0; }
+    }
+
+    @media (max-width: 600px) {
+      .cover-container { padding: 32px 20px; }
+      .cover-title { font-size: 28px; }
+      .cover-slogan { font-size: 15px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- 背景動態圓形光影 -->
+  <div class="bg-circle-1"></div>
+  <div class="bg-circle-2"></div>
+
+  <!-- 主卡片區域 -->
   <div class="cover-container">
     <span class="cover-badge">THE DIGITAL VAULT</span>
     <h1 class="cover-title">探索程式美學，<br>鍛造極致安全與除 Bug 藝廊。</h1>
@@ -124,14 +198,13 @@
       <strong>✨ 歡迎來到我的個人數位知識庫：</strong><br>
       這裡是我私房典藏的核心基地——封存著最佳化的網站架構、實戰經驗沉澱下來的突破技巧，以及滴水不漏的資安防禦邏輯。<br>
       無論是優雅的系統骨架，還是強行突破難題的極客之道，所有靈感與成果都在此一覽無遺。
-      
-      <div class="login-placeholder-box">
-        🔒 [系統入口預留] 未來可於此處直接嵌入身分驗證與管理員權限登入。
-      </div>
     </div>
 
-    <!-- 點擊跳轉至後台 Dashboard 頁面 -->
-    <a href="dashboard.html" class="start-btn">🚀 探索知識寶庫</a>
+    <!-- 按鈕直通 Dashboard -->
+    <div class="btn-wrapper">
+      <div class="btn-ripple"></div>
+      <a href="dashboard.html" class="start-btn">🚀 探索知識寶庫</a>
+    </div>
   </div>
 
 </body>
