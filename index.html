@@ -7,9 +7,9 @@
   <style>
     :root {
       --bg-color: #080d1a;
-      --card-bg: rgba(15, 23, 42, 0.65);
+      --card-bg: rgba(15, 23, 42, 0.75);
       --primary: #007aff;
-      --primary-glow: rgba(0, 122, 255, 0.4);
+      --primary-glow: rgba(0, 122, 255, 0.5);
       --text-main: #ffffff;
       --text-muted: #94a3b8;
       --border-color: rgba(255, 255, 255, 0.12);
@@ -36,7 +36,7 @@
       width: 450px;
       height: 450px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(0, 122, 255, 0.35) 0%, rgba(0,0,0,0) 70%);
+      background: radial-gradient(circle, rgba(0, 122, 255, 0.4) 0%, rgba(0,0,0,0) 70%);
       top: 10%;
       left: 15%;
       z-index: 1;
@@ -48,7 +48,7 @@
       width: 550px;
       height: 550px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(0,0,0,0) 70%);
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(0,0,0,0) 70%);
       bottom: 5%;
       right: 10%;
       z-index: 1;
@@ -57,12 +57,12 @@
 
     @keyframes pulseCircle1 {
       0% { transform: scale(0.85) translate(0, 0); opacity: 0.6; }
-      100% { transform: scale(1.2) translate(30px, -20px); opacity: 0.9; }
+      100% { transform: scale(1.2) translate(30px, -20px); opacity: 0.95; }
     }
 
     @keyframes pulseCircle2 {
       0% { transform: scale(0.9) translate(0, 0); opacity: 0.5; }
-      100% { transform: scale(1.25) translate(-40px, 30px); opacity: 0.85; }
+      100% { transform: scale(1.25) translate(-40px, 30px); opacity: 0.9; }
     }
 
     /* 門面主要卡片容器 */
@@ -78,7 +78,7 @@
       border: 1px solid var(--border-color);
       padding: 48px 36px;
       border-radius: 28px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       animation: floatContainer 6s ease-in-out infinite;
     }
 
@@ -155,7 +155,7 @@
 
     .start-btn:hover {
       transform: scale(1.06);
-      box-shadow: 0 8px 35px rgba(0, 122, 255, 0.7);
+      box-shadow: 0 8px 35px rgba(0, 122, 255, 0.75);
     }
 
     .btn-ripple {
@@ -188,7 +188,7 @@
   <div class="bg-circle-1"></div>
   <div class="bg-circle-2"></div>
 
-  <!-- 主卡片區域 -->
+  <!-- 主門面區域 -->
   <div class="cover-container">
     <span class="cover-badge">THE DIGITAL VAULT</span>
     <h1 class="cover-title">探索程式美學，<br>鍛造極致安全與除 Bug 藝廊。</h1>
@@ -200,7 +200,7 @@
       無論是優雅的系統骨架，還是強行突破難題的極客之道，所有靈感與成果都在此一覽無遺。
     </div>
 
-    <!-- 按鈕直通 Dashboard -->
+    <!-- 呼吸按鈕直通 Dashboard -->
     <div class="btn-wrapper">
       <div class="btn-ripple"></div>
       <a href="dashboard.html" class="start-btn">🚀 探索知識寶庫</a>
