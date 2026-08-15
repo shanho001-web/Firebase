@@ -28,7 +28,7 @@
       overflow: hidden;
     }
 
-    /* 手機版頂部列 */
+    /* 手機版頂部工具列 (桌面版強制隱藏) */
     .mobile-header {
       display: none;
       height: 56px;
@@ -55,7 +55,7 @@
       cursor: pointer;
     }
 
-    /* 左側邊欄 Sidebar */
+    /* 唯一側邊欄 Sidebar (固定在左側) */
     .sidebar {
       width: 280px;
       background-color: var(--sidebar-bg);
@@ -72,22 +72,25 @@
     }
 
     .sidebar-header {
-      padding: 24px 20px;
+      padding: 20px;
       border-bottom: 1px solid #1e293b;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .sidebar-header h2 { font-size: 18px; color: #f8fafc; font-weight: 800; }
+    .sidebar-header h2 { font-size: 18px; color: #f8fafc; font-weight: 800; margin: 0; }
     .sidebar-header p { font-size: 12px; color: var(--sidebar-text); margin-top: 4px; }
 
     .close-btn {
       display: none;
-      background: transparent;
-      border: none;
-      color: var(--sidebar-text);
-      font-size: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #f8fafc;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      font-size: 16px;
       cursor: pointer;
     }
 
@@ -142,28 +145,30 @@
       z-index: 250;
     }
 
-    /* 右側主顯示區域 (透過 iframe 載入獨立章節) */
+    /* 右側主要內容容器 (iframe) */
     .main-wrapper {
       margin-left: 280px;
       flex: 1;
       height: 100vh;
       overflow: hidden;
+      background-color: #ffffff;
     }
 
     iframe#content-frame {
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
     }
 
     @media (max-width: 768px) {
       .mobile-header { display: flex; }
-      .close-btn { display: block; }
+      .close-btn { display: flex; align-items: center; justify-content: center; }
       
       .sidebar {
         transform: translateX(-100%);
         top: 0;
-        width: 260px;
+        width: 270px;
       }
 
       .sidebar.open { transform: translateX(0); }
@@ -179,7 +184,7 @@
 </head>
 <body>
 
-  <!-- 手機版頂部工具列 -->
+  <!-- 手機版頂部列 -->
   <header class="mobile-header">
     <h2>📂 專案與教學庫</h2>
     <button class="menu-toggle-btn" onclick="toggleSidebar()">☰ 選單</button>
@@ -187,7 +192,7 @@
 
   <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-  <!-- 左側選單 -->
+  <!-- 左側唯一選單 -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div>
@@ -205,68 +210,28 @@
       </li>
       <li class="nav-item">
         <button class="nav-btn active" onclick="loadPage('pages/ch1.html', this)">
-          <span>Chapter 1: 資安白皮書</span>
+          <span>Chapter 1: 資安指南與架構</span>
           <span class="btn-badge">現有</span>
         </button>
       </li>
       <li class="nav-item">
         <button class="nav-btn" onclick="loadPage('pages/ch2.html', this)">
-          <span>Chapter 2: 預留新專案</span>
-          <span class="btn-badge">空置</span>
+          <span>Chapter 2: 進階 Web 攻防與資安剖析</span>
+          <span class="btn-badge">更新</span>
         </button>
       </li>
-      <li class="nav-item">
-        <button class="nav-btn" onclick="loadPage('pages/ch3.html', this)">
-          <span>Chapter 3: 預留新專案</span>
-          <span class="btn-badge">空置</span>
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-btn" onclick="loadPage('pages/ch4.html', this)">
-          <span>Chapter 4: 預留新專案</span>
-          <span class="btn-badge">空置</span>
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-btn" onclick="loadPage('pages/ch5.html', this)">
-          <span>Chapter 5: 預留新專案</span>
-          <span class="btn-badge">空置</span>
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-btn" onclick="loadPage('pages/ch6.html', this)">
-          <span>Chapter 6: 預留新專案</span>
-          <span class="btn-badge">空置</span>
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-btn" onclick="loadPage('pages/ch7.html', this)">
-          <span>Chapter 7: 預留新專案</span>
-          <span class="btn-badge">空置</span>
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-btn" onclick="loadPage('pages/ch8.html', this)">
-          <span>Chapter 8: 預留新專案</span>
-          <span class="btn-badge">空置</span>
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-btn" onclick="loadPage('pages/ch9.html', this)">
-          <span>Chapter 9: 預留新專案</span>
-          <span class="btn-badge">空置</span>
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-btn" onclick="loadPage('pages/ch10.html', this)">
-          <span>Chapter 10: 預留新專案</span>
-          <span class="btn-badge">空置</span>
-        </button>
-      </li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch3.html', this)"><span>Chapter 3: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch4.html', this)"><span>Chapter 4: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch5.html', this)"><span>Chapter 5: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch6.html', this)"><span>Chapter 6: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch7.html', this)"><span>Chapter 7: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch8.html', this)"><span>Chapter 8: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch9.html', this)"><span>Chapter 9: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch10.html', this)"><span>Chapter 10: 預留新專案</span><span class="btn-badge">空置</span></button></li>
     </ul>
   </aside>
 
-  <!-- 右側內嵌獨立頁面 -->
+  <!-- 右側內嵌獨立頁面 (預設載入 pages/ch1.html) -->
   <main class="main-wrapper">
     <iframe id="content-frame" src="pages/ch1.html"></iframe>
   </main>
@@ -278,15 +243,20 @@
     }
 
     function loadPage(pageUrl, btnElement) {
-      document.getElementById('content-frame').src = pageUrl;
+      const frame = document.getElementById('content-frame');
       
+      // 切換右側內容頁面
+      frame.src = pageUrl;
+
+      // 切換按鈕高亮樣式
       const allBtns = document.querySelectorAll('.nav-btn');
       allBtns.forEach(btn => btn.classList.remove('active'));
-
+      
       if (btnElement) {
         btnElement.classList.add('active');
       }
 
+      // 手機版自動收起選單
       if (window.innerWidth <= 768) {
         toggleSidebar();
       }
