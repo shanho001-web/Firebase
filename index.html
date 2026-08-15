@@ -48,12 +48,12 @@
       border-radius: 20px;
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       margin-bottom: 20px;
     }
 
     .cover-title {
-      font-size: 36px;
+      font-size: 38px;
       font-weight: 800;
       line-height: 1.25;
       margin-bottom: 16px;
@@ -67,24 +67,26 @@
       color: var(--text-muted);
       margin-bottom: 28px;
       line-height: 1.6;
+      font-weight: 500;
     }
 
     .cover-box {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      padding: 24px;
-      border-radius: 14px;
-      font-size: 14px;
+      padding: 26px;
+      border-radius: 16px;
+      font-size: 15px;
       color: #cbd5e1;
       margin-bottom: 32px;
       text-align: left;
-      line-height: 1.6;
+      line-height: 1.7;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    /* 預留未來登入表單的區塊 */
     .login-placeholder-box {
-      margin-top: 16px;
-      padding-top: 16px;
+      margin-top: 18px;
+      padding-top: 18px;
       border-top: 1px dashed var(--border-color);
       font-size: 12px;
       color: #64748b;
@@ -94,7 +96,7 @@
       background: linear-gradient(90deg, #007aff, #005bb5);
       color: white;
       border: none;
-      padding: 14px 40px;
+      padding: 15px 42px;
       border-radius: 30px;
       font-size: 16px;
       font-weight: bold;
@@ -114,22 +116,22 @@
 <body>
 
   <div class="cover-container">
-    <span class="cover-badge">KNOWLEDGE HUB CENTER</span>
-    <h1 class="cover-title">以極致安全與簡約架構，<br>打造個人化專案知識庫。</h1>
-    <p class="cover-slogan">「零干擾、高安全性、無限擴充的數位系統展示平台」</p>
+    <span class="cover-badge">THE DIGITAL VAULT</span>
+    <h1 class="cover-title">探索程式美學，<br>鍛造極致安全與除 Bug 藝廊。</h1>
+    <p class="cover-slogan">「每一個精心設計的架構，都是強悍思維的具體呈現。」</p>
     
     <div class="cover-box">
-      <strong>💡 系統入口與架構邏輯：</strong><br>
-      • 本頁（index.html）為前台入口門面，預留未來的身分驗證與登入機制。<br>
-      • 後台（dashboard.html）採用模組化導覽，動態讀取 <code>pages/</code> 資料夾下的獨立章節網頁。
+      <strong>✨ 歡迎來到我的個人數位知識庫：</strong><br>
+      這裡是我私房典藏的核心基地——封存著最佳化的網站架構、實戰經驗沉澱下來的突破技巧，以及滴水不漏的資安防禦邏輯。<br>
+      無論是優雅的系統骨架，還是強行突破難題的極客之道，所有靈感與成果都在此一覽無遺。
       
       <div class="login-placeholder-box">
-        🔒 [預留位置] 未來可於此處直接嵌入 Firebase Auth 登入 / 密碼驗證表單。
+        🔒 [系統入口預留] 未來可於此處直接嵌入身分驗證與管理員權限登入。
       </div>
     </div>
 
-    <!-- 點擊跳轉至獨立的後台 Dashboard 頁面 -->
-    <a href="dashboard.html" class="start-btn">🚀 進入系統 Dashboard</a>
+    <!-- 點擊跳轉至後台 Dashboard 頁面 -->
+    <a href="dashboard.html" class="start-btn">🚀 探索知識寶庫</a>
   </div>
 
 </body>
