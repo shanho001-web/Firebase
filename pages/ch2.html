@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chapter 2 - 進階 Web 攻防與資安剖析</title>
+  <title>專案與教學知識庫 - Dashboard</title>
   <style>
     :root {
       --bg-main: #f8fafc;
+      --sidebar-bg: #0f172a;
+      --sidebar-text: #94a3b8;
+      --sidebar-hover: #1e293b;
+      --sidebar-active: #007aff;
       --card-bg: #ffffff;
       --primary: #007aff;
       --text-main: #1e293b;
-      --text-muted: #64748b;
       --border-color: #e2e8f0;
-      --code-bg: #0f172a;
-      --code-text: #38bdf8;
-      --danger-color: #ef4444;
-      --success-color: #10b981;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,250 +23,235 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background-color: var(--bg-main);
       color: var(--text-main);
-      padding: 30px 20px;
-      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      overflow: hidden;
     }
 
-    .container { max-width: 900px; margin: 0 auto; }
-
-    header.doc-header {
-      background: var(--card-bg);
-      padding: 32px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
+    /* 手機版頂部列 */
+    .mobile-header {
+      display: none;
+      height: 56px;
+      background-color: var(--sidebar-bg);
+      color: white;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      border-bottom: 1px solid #1e293b;
     }
 
-    .tag-badge {
-      display: inline-block;
-      background: #eff6ff;
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 13px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 12px;
+    .mobile-header h2 { font-size: 16px; font-weight: 700; color: #f8fafc; }
+
+    .menu-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
-    h1 { font-size: 26px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; }
-
-    .notice-box {
-      background: #f1f5f9;
-      border-left: 4px solid var(--primary);
-      padding: 16px;
-      border-radius: 0 8px 8px 0;
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-top: 16px;
+    /* 左側邊欄 Sidebar */
+    .sidebar {
+      width: 280px;
+      background-color: var(--sidebar-bg);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 300;
+      overflow-y: auto;
+      border-right: 1px solid #1e293b;
+      transition: transform 0.3s ease-in-out;
     }
 
-    section.page-sec {
-      background: var(--card-bg);
-      padding: 32px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
-    }
-
-    h2.sec-title {
-      font-size: 20px;
-      font-weight: 700;
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      color: var(--text-main);
-    }
-
-    h3 { font-size: 16px; font-weight: 700; margin: 18px 0 8px 0; color: #334155; }
-
-    p, li { font-size: 15px; color: #475569; margin-bottom: 12px; }
-    ul, ol { padding-left: 20px; }
-    li { margin-bottom: 8px; }
-
-    .vector-card {
-      background: #f8fafc;
-      border: 1px solid var(--border-color);
+    .sidebar-header {
       padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .vector-title {
+    .sidebar-header h2 { font-size: 18px; color: #f8fafc; font-weight: 800; margin: 0; }
+    .sidebar-header p { font-size: 12px; color: var(--sidebar-text); margin-top: 4px; }
+
+    /* 修正交叉（✕）關閉按鈕樣式 */
+    .close-btn {
+      display: none;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #f8fafc;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      font-size: 16px;
+      line-height: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .close-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+    .nav-list { list-style: none; padding: 16px 12px; }
+    .nav-item { margin-bottom: 6px; }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: var(--sidebar-text);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--text-main);
-      margin-bottom: 10px;
+      transition: all 0.2s ease;
     }
 
-    .danger-tag {
-      background: #fee2e2;
-      color: #991b1b;
-      font-size: 12px;
-      padding: 2px 8px;
+    .nav-btn:hover { background-color: var(--sidebar-hover); color: #f8fafc; }
+    .nav-btn.active {
+      background-color: var(--sidebar-active);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    }
+
+    .home-link-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 12px;
+      text-decoration: none;
+    }
+
+    .btn-badge {
+      font-size: 10px;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-weight: bold;
+      background: rgba(255, 255, 255, 0.15);
+      color: inherit;
     }
 
-    .tech-box {
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      padding: 16px;
-      border-radius: 10px;
-      margin: 12px 0;
-      font-size: 14px;
-      color: #0369a1;
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 250;
     }
 
-    .tech-box ul { padding-left: 20px; margin-top: 6px; }
+    .main-wrapper {
+      margin-left: 280px;
+      flex: 1;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-    blockquote {
-      background: #ecfdf5;
-      border-left: 4px solid var(--success-color);
-      padding: 12px 16px;
-      margin: 16px 0;
-      border-radius: 0 8px 8px 0;
-      font-size: 14px;
-      color: #065f46;
+    iframe#content-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-header { display: flex; }
+      .close-btn { display: flex; align-items: center; justify-content: center; }
+      
+      .sidebar {
+        transform: translateX(-100%);
+        top: 0;
+        width: 270px;
+      }
+
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+
+      .main-wrapper {
+        margin-left: 0;
+        padding-top: 56px;
+        height: calc(100vh - 56px);
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <header class="doc-header">
-    <span class="tag-badge">Chapter 2 ・ 進階資安剖析</span>
-    <h1>超越 F12：Web 潛在破解途徑<br>與 Google Firebase 深度防禦分析</h1>
-    <div class="notice-box">
-      <strong>超越前端工具的資安視野：</strong><br>
-      以網路安全與系統架構的角度來看，「F12 開發者工具」只是前端（瀏覽器端）的檢視與測試工具，並不是唯一的攻擊路徑。<br>
-      在真實世界中，黑客或資安人員如果要評估或挑戰一個 Web 應用程式，通常會從<strong>傳輸層、身分鑑別層、API 介面、依賴套件</strong>等多個維度尋找潛在漏洞。<br>
-      由於本系統採用了 Google Firebase 企業級 Serverless 架構，許多傳統伺服器的漏洞（例如 SQL 注入、伺服器作業系統漏洞）已由 Google 團隊底層防護。本章節將深度剖析除了 F12 以外的 5 大潛在破解維度及其對應防禦機制。
-    </div>
+  <!-- 手機版頂部工具列 -->
+  <header class="mobile-header">
+    <h2>📂 專案與教學庫</h2>
+    <button class="menu-toggle-btn" onclick="toggleSidebar()">☰ 選單</button>
   </header>
 
-  <!-- 1. API Bypassing -->
-  <section class="page-sec">
-    <h2 class="sec-title">🎯 一、 繞過前端，直接對 API 發起請求（API Bypassing）</h2>
-    <div class="vector-card">
-      <div class="vector-title">
-        <span>潛在攻擊手法：繞過 UI 邏輯構造 HTTP 封包</span>
-        <span class="danger-tag">威脅等級：高</span>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- 左側選單 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div>
+        <h2>📂 專案與教學庫</h2>
+        <p>Dashboard Hub Center</p>
       </div>
-      <p>攻擊者不需要使用瀏覽器的 F12 介面，而是利用 <strong>Postman</strong>、<strong>cURL</strong> 或自訂的 <strong>Python / Node.js 腳本</strong>，完全繞過前端 UI 介面的任何限制（例如前端輸入框的位數限制或按鈕禁用的 JavaScript 邏輯），直接將數據封包發送給 Firestore 或 Storage API。</p>
-      
-      <div class="tech-box">
-        <strong>🛡️ 系統深度防禦機制：</strong>
-        <ul>
-          <li><strong>伺服器端強制執行規則（Firestore Rules）</strong>：後端寫得非常嚴謹，Security Rules 在伺服器端實施了 <code>allow update: if isSuperAdmin()</code> 與 <code>request.resource.data.role == 'member'</code>。</li>
-          <li><strong>防禦結果</strong>：代表任何繞過前端 UI 構造的惡意 API 請求，都會在 Google 伺服器端第一時間被拒絕並拋出 Permission Denied。</li>
-        </ul>
-      </div>
+      <button class="close-btn" onclick="toggleSidebar()">✕</button>
     </div>
-  </section>
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="index.html" class="nav-btn home-link-btn">
+          <span>🏠 返回首頁 Index</span>
+          <span class="btn-badge">EXIT</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn active" onclick="loadPage('pages/ch1.html', this)">
+          <span>Chapter 1: 資安指南與架構</span>
+          <span class="btn-badge">現有</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch2.html', this)">
+          <span>Chapter 2: 進階 Web 攻防與資安剖析</span>
+          <span class="btn-badge">更新</span>
+        </button>
+      </li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch3.html', this)"><span>Chapter 3: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch4.html', this)"><span>Chapter 4: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch5.html', this)"><span>Chapter 5: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch6.html', this)"><span>Chapter 6: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch7.html', this)"><span>Chapter 7: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch8.html', this)"><span>Chapter 8: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch9.html', this)"><span>Chapter 9: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="loadPage('pages/ch10.html', this)"><span>Chapter 10: 預留新專案</span><span class="btn-badge">空置</span></button></li>
+    </ul>
+  </aside>
 
-  <!-- 2. Auth & Session Hijacking -->
-  <section class="page-sec">
-    <h2 class="sec-title">🔑 二、 認證與 Token 竊取 / 洩漏（Auth & Session Hijacking）</h2>
-    <div class="vector-card">
-      <div class="vector-title">
-        <span>潛在攻擊手法：獲取合法使用者的身分憑證</span>
-        <span class="danger-tag">威脅等級：高</span>
-      </div>
-      <p>攻擊者不攻擊資料庫本身，而是嘗試獲取合法使用者的身分憑證（JWT Token / LocalStorage Session），進而冒用身分操作：</p>
-      <ol>
-        <li><strong>跨站腳本攻擊 (XSS)</strong>：如果網站允許使用者輸入未經轉義的 HTML/JavaScript 程式碼，惡意腳本在其他人的瀏覽器執行時，就能讀取 <code>localStorage</code> 內的認證資料。</li>
-        <li><strong>憑證釣魚 (Phishing) 或弱密碼暴力破解</strong>：嘗試猜測使用者的密碼（若使用者設定了弱密碼）。</li>
-        <li><strong>中間人攻擊 (MITM)</strong>：在未加密的公共 Wi-Fi 中截取傳輸封包。</li>
-      </ol>
+  <!-- 右側內嵌獨立頁面 -->
+  <main class="main-wrapper">
+    <iframe id="content-frame" src="pages/ch1.html"></iframe>
+  </main>
 
-      <div class="tech-box">
-        <strong>🛡️ 系統深度防禦機制：</strong>
-        <ul>
-          <li><strong>全站 TLS 1.3 (HTTPS) 高強度加密</strong>：杜絕網路傳輸過程中的封包截取。</li>
-          <li><strong>前端動態字串消毒（XSS Sanitization）</strong>：全面使用 <code>escapeHtml()</code> 處理所有動態渲染文字，阻斷 XSS 腳本執行。</li>
-          <li><strong>Firebase Authentication 憑證託管</strong>：採用具備密碼學數位簽章的 JWT Token，並支援高強度密碼驗證。</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
 
-  <!-- 3. Brute-Force & Enumeration -->
-  <section class="page-sec">
-    <h2 class="sec-title">💣 三、 邀請碼自動化窮舉（Brute-Force & Enumeration）</h2>
-    <div class="vector-card">
-      <div class="vector-title">
-        <span>潛在攻擊手法：自動化腳本碰撞邀請暗號</span>
-        <span class="danger-tag">威脅等級：中</span>
-      </div>
-      <p>如果邀請暗號過於簡單（例如 <code>123</code> 或 <code>2026</code>），攻擊者可以撰寫自動化腳本，以極高的速度向 Firebase 發起註冊請求，試圖「撞出」正確的邀請碼來非法開戶。</p>
-
-      <div class="tech-box">
-        <strong>🛡️ 系統深度防禦機制：</strong>
-        <ul>
-          <li><strong>暗號高複雜度要求</strong>：邀請碼要求具備一定長度與英文大小寫混合（例如 <code>VIP-Pass88</code>）。</li>
-          <li><strong>Cloud Firestore 權限限縮</strong>：徹底關閉 <code>allow list:</code> 批量查詢權限，不給攻擊者一次過扒光暗號清單的機會。</li>
-          <li><strong>App Check & Rate Limiting</strong>：整合 <strong>Google Firebase App Check</strong>（配合 reCAPTCHA v3），阻斷自動化 Bot 腳本頻繁請求。</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. Supply Chain Vulnerability -->
-  <section class="page-sec">
-    <h2 class="sec-title">📦 四、 前端第三方函式庫供應鏈漏洞（Supply Chain Vulnerability）</h2>
-    <div class="vector-card">
-      <div class="vector-title">
-        <span>潛在攻擊手法：利用第三方 CDN 舊套件漏洞</span>
-        <span class="danger-tag">威脅等級：中</span>
-      </div>
-      <p>前端引入了幾項常見的第三方 CDN 函式庫（例如 <code>xlsx.full.min.js</code>、<code>jszip.min.js</code>、<code>FileSaver.min.js</code>）。如果 CDN 連結被污染，或引入了帶有已知 CVE 漏洞的舊版本函式庫，攻擊者可能利用解析特製的檔案引發記憶體溢出或 XSS 攻擊。</p>
-
-      <div class="tech-box">
-        <strong>🛡️ 系統深度防禦機制：</strong>
-        <ul>
-          <li><strong>官方可信 CDN 引用</strong>：嚴格限定使用官方可信之 CDN 來源（如 cdnjs）。</li>
-          <li><strong>版本維護與 SRI 哈希驗證</strong>：定期更新 CDN SDK 至穩定防護版本，必要時加入 Subresource Integrity (SRI) 雜湊值校驗，確保程式碼未遭竄改。</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. Denial of Service / Storage Exhaustion -->
-  <section class="page-sec">
-    <h2 class="sec-title">🚨 五、 邏輯漏洞與資產濫用（Denial of Service / Storage Exhaustion）</h2>
-    <div class="vector-card">
-      <div class="vector-title">
-        <span>潛在攻擊手法：合規帳號上傳巨量檔案耗盡資源</span>
-        <span class="danger-tag">威脅等級：中</span>
-      </div>
-      <p>攻擊者註冊成為合法會員後，利用合法的權限，持續、大量上傳 9.9MB 的垃圾圖片，試圖塞爆 Storage 儲存空間或拉高 Firebase 雲端帳單成本。</p>
-
-      <div class="tech-box">
-        <strong>🛡️ 系統深度防禦機制：</strong>
-        <ul>
-          <li><strong>Storage Rules 格式與大小限制</strong>：限制單檔大小於 10MB 內，且檔案類型必須嚴格為圖片格式（<code>image/*</code>）。</li>
-          <li><strong>GCP 預算告警與配額管理</strong>：設定 GCP Budget Alerts 告警機制，極端情況下可配合 Cloud Functions 限制單一 UID 每月上傳張數上限。</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- 總結 -->
-  <section class="page-sec">
-    <h2 class="sec-title">🏛️ 六、 結論：資安縱深防禦（Defense in Depth）架構</h2>
-    <blockquote>
-      <strong>資安核心哲學：</strong><br>
-      在資安縱深防禦的架構下，<strong>「網頁原始碼或 F12 被人看光」並不可怕</strong>。<br>
-      真正的資安核心在於：<strong>即便攻擊者拿到完全公開的前端程式碼、甚至直接發送 API 封包，Google 伺服器端的權限規則（Firestore Rules + Storage Rules + App Check）依然能牢牢鎖死第一線！</strong><br>
-      只要後端的 Security Rules 邏輯無懈可擊，本系統對於一般及進階攻擊者來說皆具備了極高的防護壁壘。
-    </blockquote>
-  </section>
-</div>
-
+    function loadPage(pageUrl, btnElement) {
+      document.getElementById('content-frame').src = pageUrl;
+      const allBtns = document.querySelectorAll('.nav-btn');
+      allBtns.forEach(btn => btn.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+      if (window.innerWidth <= 768) toggleSidebar();
+    }
+  </script>
 </body>
 </html>
