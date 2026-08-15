@@ -28,7 +28,34 @@
       overflow: hidden;
     }
 
-    /* 左側邊欄 Sidebar */
+    /* 頂部手機版導覽列 (預設桌面版隱藏) */
+    .mobile-header {
+      display: none;
+      height: 56px;
+      background-color: var(--sidebar-bg);
+      color: white;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .mobile-header h2 { font-size: 16px; font-weight: 700; color: #f8fafc; }
+
+    .menu-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 18px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* 左側邊欄 Sidebar (桌面版固定，手機版滑出) */
     .sidebar {
       width: 280px;
       background-color: var(--sidebar-bg);
@@ -38,18 +65,31 @@
       flex-shrink: 0;
       position: fixed;
       top: 0; bottom: 0; left: 0;
-      z-index: 100;
+      z-index: 300;
       overflow-y: auto;
       border-right: 1px solid #1e293b;
+      transition: transform 0.3s ease-in-out;
     }
 
     .sidebar-header {
       padding: 24px 20px;
       border-bottom: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .sidebar-header h2 { font-size: 18px; color: #f8fafc; font-weight: 800; }
     .sidebar-header p { font-size: 12px; color: var(--sidebar-text); margin-top: 4px; }
+
+    .close-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--sidebar-text);
+      font-size: 20px;
+      cursor: pointer;
+    }
 
     .nav-list { list-style: none; padding: 16px 12px; }
     .nav-item { margin-bottom: 6px; }
@@ -93,7 +133,17 @@
       color: inherit;
     }
 
-    /* 右側主要內容容器 (iframe 載入獨立頁面) */
+    /* 手機版遮罩 Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 250;
+    }
+
+    /* 右側內容區域 */
     .main-wrapper {
       margin-left: 280px;
       flex: 1;
@@ -107,20 +157,54 @@
       border: none;
     }
 
+    /* 📱 手機版專屬響應式（RWD）適應 */
     @media (max-width: 768px) {
-      body { flex-direction: column; overflow: auto; }
-      .sidebar { width: 100%; position: relative; height: auto; }
-      .main-wrapper { margin-left: 0; height: 100vh; }
+      .mobile-header { display: flex; }
+      .close-btn { display: block; }
+      
+      /* 手機版將選單收起在螢幕外 */
+      .sidebar {
+        transform: translateX(-100%);
+        top: 0;
+        width: 260px;
+      }
+
+      /* 當開啟選單時滑出 */
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+        padding-top: 56px; /* 留出頂部列位置 */
+        height: calc(100vh - 56px);
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- 手機版頂部工具列 -->
+  <header class="mobile-header">
+    <h2>📂 專案與教學庫</h2>
+    <button class="menu-toggle-btn" onclick="toggleSidebar()">☰ 選單</button>
+  </header>
+
+  <!-- 手機版背景遮罩 -->
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
   <!-- 左側選單 -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <h2>📂 專案與教學庫</h2>
-      <p>Dashboard Hub Center</p>
+      <div>
+        <h2>📂 專案與教學庫</h2>
+        <p>Dashboard Hub Center</p>
+      </div>
+      <button class="close-btn" onclick="toggleSidebar()">✕</button>
     </div>
     <ul class="nav-list">
       <li class="nav-item">
@@ -192,12 +276,21 @@
     </ul>
   </aside>
 
-  <!-- 右側：以內嵌框架動態加載獨立 Chapter 檔案 -->
+  <!-- 右側內容區 -->
   <main class="main-wrapper">
     <iframe id="content-frame" src="pages/ch1.html"></iframe>
   </main>
 
   <script>
+    // 切換選單開啟/關閉狀態
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+
+    // 載入頁面並在手機版自動收起選單
     function loadPage(pageUrl, btnElement) {
       document.getElementById('content-frame').src = pageUrl;
       
@@ -206,6 +299,11 @@
 
       if (btnElement) {
         btnElement.classList.add('active');
+      }
+
+      // 如果是在手機螢幕下，點擊 Chapter 後自動關閉選單
+      if (window.innerWidth <= 768) {
+        toggleSidebar();
       }
     }
   </script>
