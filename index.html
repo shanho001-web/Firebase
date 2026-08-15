@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>開支索償與收支管理系統 —— 系統架構、資安防禦與安心使用白皮書</title>
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --primary: #007aff;
+      --primary-hover: #005bb5;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --code-bg: #0f172a;
+      --code-text: #38bdf8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
+    }
+
+    .badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .notice-box {
+      background: #f1f5f9;
+      border-left: 4px solid var(--primary);
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    section {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 16px 0 8px 0;
+      color: #334155;
+    }
+
+    p, li {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 12px;
+    }
+
+    ul, ol {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    /* Code Block Area */
+    .code-container {
+      background: var(--code-bg);
+      color: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin: 20px 0;
+      line-height: 1.5;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .code-title {
+      color: var(--code-text);
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 6px;
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: #f8fafc;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .status-safe {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    /* Step Box */
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .step-card {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .step-number {
+      background: var(--primary);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px 10px;
+      }
+      header, section {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <span class="badge">官方安全文件</span>
+    <h1>🛡️ 開支索償與收支管理系統<br>系統架構、資安防禦與安心使用白皮書</h1>
+    <div class="notice-box">
+      <strong>致全體團隊成員與夥伴：</strong><br>
+      為了讓大家在進行日常開支報銷、單據核對與財務管理時更加高效、透明且享有最高規格的隱私保障，我們正式啟用了本套專屬管理系統。本文件旨在公開系統的底層架構、前後端防禦邏輯及隱私隔離機制。
+    </div>
+  </header>
+
+  <!-- Section 1 -->
+  <section>
+    <h2>🏛️ 一、 基礎設施：Google Firebase 全球企業級雲端服務</h2>
+    <p>本系統並非架設於隨時面臨單點故障或漏洞風險的傳統主機，而是完全基於 Google Cloud Platform (GCP) 旗下的 Google Firebase 伺服器端無伺服器（Serverless）架構，具備與跨國金融機構同等級別的安全標準：</p>
+    
+    <ul>
+      <li><strong>傳輸層安全協議（TLS 1.3 / HTTPS 256-bit 加密）：</strong> 所有客戶端與雲端伺服器之間的通訊均受全鏈路高強度加密保護，徹底杜絕中間人攻擊（MITM）與封包嗅探。</li>
+      <li><strong>密碼學身分鑑別（Firebase Authentication & JWT）：</strong> 使用者每次登入，Google 會簽發一張具備時效性且帶有密碼學數位簽章的 JSON Web Token (JWT)。每一次操作皆由 Google Auth 進行身分校驗，無法透過偽造 Cookie 或 Session 冒名頂替。</li>
+      <li><strong>分散式高可用資料庫（Cloud Firestore）：</strong> 資料具備多資料中心異地即時備份與強一致性保證，具備 99.999% 服務可用性，無遺失數據風險。</li>
+      <li><strong>二進位儲存槽與存取控制（Firebase Cloud Storage）：</strong> 收據發票圖片獨立存放於物件儲存槽（Blob Storage），並由底層安全性規則直接進行存取控制列表（ACL）管控。</li>
+    </ul>
+  </section>
+
+  <!-- Section 2 -->
+  <section>
+    <h2>🔒 二、 專屬邀請暗號機制（封閉式團體專用門禁）</h2>
+    <p>為了確保系統純淨運作，完全隔離公網爬蟲與未授權人員，系統實施了嚴密的門禁機制：</p>
+
+    <ul>
+      <li><strong>非公開註冊模式：</strong> 系統全面關閉公開註冊。新成員必須取得由管理員親自發放的專屬暗號（區分大小寫，具備密碼學複雜度），方能完成帳號初始化。</li>
+      <li><strong>防暴力窮舉與防拖庫（Anti-Enumeration）：</strong> 在伺服器端 Firestore Rules 中，徹底關閉了客戶端批量讀取權限。外部或惡意腳本無法透過 API 一鍵抓取所有暗號清單；客戶端僅能以 <code>get</code> 進行單筆精準比對，只要大小寫或字元不符即刻拒絕。</li>
+      <li><strong>配額鎖定與原子計數：</strong> 每個邀請暗號均設有使用次數上限（Limit）與使用紀錄（Audit Log），額滿自動失效，杜絕暗號被無限轉發。</li>
+    </ul>
+  </section>
+
+  <!-- Section 3 -->
+  <section>
+    <h2>🛡️ 三、 前後端防禦縱深：面對惡意「F12 開發者工具」時的防禦邏輯</h2>
+    <p>許多具備 IT 知識的朋友會關心：「網頁客戶端代碼在瀏覽器皆可檢視，若有惡意使用者透過 F12 / Postman / DevTools 篡改 API 或腳本，系統能防得住嗎？」</p>
+    <p>本系統採用<strong>「前端主動消毒 + 服務端零信任（Zero-Trust Server-Side Enforcement）」</strong>的雙層架構，所有安全性檢驗均在 Google 伺服器端完成，前端的任何篡改皆無法突破防線：</p>
+
+    <div class="code-container">
+      <span class="code-title">【防禦審計對照表 (Server-Side Enforcement)】</span>
+【攻擊者客戶端嘗試 (F12 / API)】          【Google 伺服器端規則審計】             【結果】
+1. 傳送 payload 將 role 改為 'admin' ──➔  檢查: request.resource.data.role == 'member' ──➔ ❌ 403 拒絕提權
+2. 發起 Update 請求修改單據金額 ──────➔  檢查: allow update: if isSuperAdmin()        ──➔ ❌ 403 禁止修改
+3. 嘗試讀取非本人 UID 的收據圖檔 ────➔  檢查: request.auth.uid == userId               ──➔ ❌ 403 阻斷讀取
+4. 在輸入欄位夾帶 XSS 惡意腳本 ────────➔  前端: escapeHtml() 轉義為純文字實體編碼        ──➔ 🛡️ 腳本失效
+    </div>
+
+    <h3>1. 垂直提權防禦（Privilege Escalation Protection）</h3>
+    <p><strong>情境：</strong>攻擊者在註冊或更新時，透過 Console 控制台將 role 欄位強行寫入 "admin"。</p>
+    <p><strong>防禦：</strong>Firestore 規則強制限定註冊時 <code>request.resource.data.role == 'member'</code>。任何非管理員試圖賦予自身 Admin 權限的請求，將在資料庫層級直接被阻斷並拋出 Permission Denied。</p>
+
+    <h3>2. 帳目防篡改機制（Immutable Financial Ledger）</h3>
+    <p><strong>情境：</strong>單據提交後，使用者試圖透過 Postman 發送 update 請求調高報銷金額或修改匯率。</p>
+    <p><strong>防禦：</strong>一般會員在伺服器端完全沒有任何修改權限（<code>allow update: if isSuperAdmin()</code>）。單據一旦建立，其金額、幣別、匯率與分類在物理層面上即成為永久唯讀狀態。</p>
+
+    <h3>3. 發票圖片 UID 物理目錄隔離（Row-Level Storage Security）</h3>
+    <p><strong>情境：</strong>使用者試圖透過猜測或遍歷檔名，下載或刪除其他成員的敏感發票收據。</p>
+    <p><strong>防禦：</strong>所有單據圖片均存放在 <code>/claims/{userId}/{fileName}</code> 目錄下。Storage 規則在每次存取時嚴格校驗 <code>request.auth.uid == userId</code>。非該檔案擁有者（或管理員），Google 伺服器在通訊協定層直接回絕，連 1 個 Byte 的資料都不會外洩。</p>
+
+    <h3>4. 單據生命週期與審核鎖定（Status-Based Deletion Lock）</h3>
+    <p><strong>未審核階段（Unclaimed）：</strong>若填寫有誤，會員擁有自主刪除權限（<code>resource.data.status == 'unclaimed'</code>），可自由撤回並重新提交。</p>
+    <p><strong>已入帳階段（Claimed）：</strong>一旦管理員審批通過，單據狀態轉為 claimed，系統策略自動撤銷一般會員的刪除權限，防止任何一方事後湮滅財務憑證。</p>
+
+    <h3>5. XSS 跨站腳本與重複提交防護</h3>
+    <p><strong>前端消毒：</strong>所有渲染至 DOM 的動態資料均經過 <code>escapeHtml()</code> 轉義處理，有效防範 HTML/JS 注入攻擊。</p>
+    <p><strong>防重複點擊（Debounce / Disable）：</strong>提交及登入按鈕於發送請求瞬間立即處於 disabled 狀態，防止網路波動導致重複寫入。</p>
+  </section>
+
+  <!-- Section 4 -->
+  <section>
+    <h2>📋 四、 全體成員安心承諾清單</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>核心關切事項</th>
+            <th>系統技術保障機制</th>
+            <th>安全狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>我的收據隱私會外洩給其他會員嗎？</strong></td>
+            <td>由 Firebase Storage 依據用戶專屬 UID 進行物理隔離，僅本人及審查管理員有權讀取。</td>
+            <td><span class="status-badge status-safe">🔒 絕對不會</span></td>
+          </tr>
+          <tr>
+            <td><strong>已提交的帳目會被他人暗中修改嗎？</strong></td>
+            <td>一般會員無資料庫 Update 權限，單據金額具備不可篡改性（Immutability）。</td>
+            <td><span class="status-badge status-safe">🔒 絕對不會</span></td>
+          </tr>
+          <tr>
+            <td><strong>若填寫錯誤或上傳錯檔案該如何處理？</strong></td>
+            <td>審核前可自由撤回。在管理員審批入帳前，您可以隨時自行刪除單據並重新提交。</td>
+            <td><span class="status-badge status-safe">🔒 審核前可撤回</span></td>
+          </tr>
+          <tr>
+            <td><strong>單據審核通過後的安全性？</strong></td>
+            <td>審核鎖定機制。標記入帳後即鎖定為正式歷史檔案，會員無法刪除，確保雙方權益。</td>
+            <td><span class="status-badge status-safe">🔒 雙方權益鎖定</span></td>
+          </tr>
+          <tr>
+            <td><strong>系統具備防範惡意攻擊的能力嗎？</strong></td>
+            <td>架構於 Google Firebase 企業級雲端之上，所有安全檢驗皆於伺服器端強制執行，前端 F12 竄改完全無效。</td>
+            <td><span class="status-badge status-safe">🔒 極高防護力</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 5 -->
+  <section>
+    <h2>🚀 五、 快速上手步驟</h2>
+    <div class="step-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>索取專屬邀請暗號</h3>
+        <p>向管理員索取邀請代碼（例如：<code>VIP-Pass88</code>，請務必注意英文大小寫）。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>註冊帳號</h3>
+        <p>進入系統首頁 ➔ 選擇「會員專區」➔ 點擊「輸入暗號註冊」，填寫姓名、Email、密碼與邀請暗號。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>開始報帳</h3>
+        <p>登入後即可拍照上傳收據、填寫金額（支援 HKD / RMB 匯率換算）並一鍵提交審核！</p>
+      </div>
+    </div>
+
+    <div class="notice-box" style="margin-top: 24px;">
+      💡 <strong>使用建議：</strong><br>
+      系統完整支援桌面與行動裝置瀏覽器，建議將網址「加入手機主畫面（書籤）」，便於隨時拍照即時報帳。如有任何操作疑問或需索取邀請暗號，歡迎隨時與管理員聯繫！
+    </div>
+  </section>
+
+  <footer>
+    <p>© 開支索償與收支管理系統 —— 系統資安與隱私防護白皮書</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
