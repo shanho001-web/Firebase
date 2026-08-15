@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>後台管理控制台 - Dashboard</title>
+  <style>
+    :root {
+      --bg-main: #f8fafc;
+      --sidebar-bg: #0f172a;
+      --sidebar-text: #94a3b8;
+      --sidebar-hover: #1e293b;
+      --sidebar-active: #007aff;
+      --card-bg: #ffffff;
+      --primary: #007aff;
+      --text-main: #1e293b;
+      --border-color: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 左側邊欄 Sidebar */
+    .sidebar {
+      width: 280px;
+      background-color: var(--sidebar-bg);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+      overflow-y: auto;
+      border-right: 1px solid #1e293b;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .sidebar-header h2 { font-size: 18px; color: #f8fafc; font-weight: 800; }
+    .sidebar-header p { font-size: 12px; color: var(--sidebar-text); margin-top: 4px; }
+
+    .nav-list { list-style: none; padding: 16px 12px; }
+    .nav-item { margin-bottom: 6px; }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: var(--sidebar-text);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover { background-color: var(--sidebar-hover); color: #f8fafc; }
+    .nav-btn.active {
+      background-color: var(--sidebar-active);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    }
+
+    .home-link-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 12px;
+      text-decoration: none;
+    }
+
+    .btn-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      color: inherit;
+    }
+
+    /* 右側主要內容容器 (iframe 載入獨立頁面) */
+    .main-wrapper {
+      margin-left: 280px;
+      flex: 1;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    iframe#content-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; overflow: auto; }
+      .sidebar { width: 100%; position: relative; height: auto; }
+      .main-wrapper { margin-left: 0; height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 左側選單 -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>📂 專案與教學庫</h2>
+      <p>Dashboard Hub Center</p>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="index.html" class="nav-btn home-link-btn">
+          <span>🏠 返回首頁 Index</span>
+          <span class="btn-badge">EXIT</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn active" onclick="loadPage('pages/ch1.html', this)">
+          <span>Chapter 1: 資安白皮書</span>
+          <span class="btn-badge">現有</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch2.html', this)">
+          <span>Chapter 2: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch3.html', this)">
+          <span>Chapter 3: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch4.html', this)">
+          <span>Chapter 4: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch5.html', this)">
+          <span>Chapter 5: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch6.html', this)">
+          <span>Chapter 6: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch7.html', this)">
+          <span>Chapter 7: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch8.html', this)">
+          <span>Chapter 8: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch9.html', this)">
+          <span>Chapter 9: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-btn" onclick="loadPage('pages/ch10.html', this)">
+          <span>Chapter 10: 預留新專案</span>
+          <span class="btn-badge">空置</span>
+        </button>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- 右側：以內嵌框架動態加載獨立 Chapter 檔案 -->
+  <main class="main-wrapper">
+    <iframe id="content-frame" src="pages/ch1.html"></iframe>
+  </main>
+
+  <script>
+    function loadPage(pageUrl, btnElement) {
+      document.getElementById('content-frame').src = pageUrl;
+      
+      const allBtns = document.querySelectorAll('.nav-btn');
+      allBtns.forEach(btn => btn.classList.remove('active'));
+
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>
