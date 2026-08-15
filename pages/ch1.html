@@ -182,7 +182,7 @@
       為咗等大家平時買嘢報銷、交單據、記帳時更加輕鬆、快靚正，同時清清楚楚保障每一位朋友嘅個人隱私，我哋正式啟用咗呢個全新的內部專用報帳系統。<br><br>
       可能大家第一次用，心入面難免會有幾點疑問：<br>
       👉 「我上傳嘅私人收據，其他會員會唔會八卦睇到？」<br>
-      👉 「如果有人識寫程式，按鍵盤 F12（開發者工具）修改代碼，會唔會改到資料搞破壞？」<br>
+      👉 「黑客會用什麼手法攻擊？系統底層如何確保完全無法破解？」<br>
       👉 「點解註冊要入邀請暗號咁神秘？」<br><br>
       為咗等大家用得舒舒服服、100% 放心，呢度用最親民嘅語言，配合 <strong>Google 企業級雲端資安架構</strong>，一次過同大家交代背後嘅雙重防禦機制！
     </div>
@@ -209,42 +209,45 @@
     </div>
   </section>
 
-  <!-- 第二節 -->
+  <!-- 第二節 (重新構造黑客破解手法與底層不可破解防線) -->
   <section class="page-sec">
-    <h2 class="sec-title">🛡️ 二、 就算有人按「F12 開發者工具」搞破壞，都完全無效！（前後端雙重鐵壁）</h2>
-    <p>許多具備 IT 知識嘅朋友會關心：「網頁客戶端代碼喺瀏覽器按 F12 皆可檢視，如果有人透過 Console 控制台、Postman 或腳本竄改代碼，會唔會偷睇到嘢或者報假帳？」</p>
-    <p>答案係：<strong>完全唔會！</strong> 我哋採用咗<strong>「前端消毒 + 服務端零信任 (Zero-Trust Enforcement)」</strong>嘅雙層架構，所有安全性檢驗均喺 Google 伺服器端完成，前端按 F12 進行任何竄改皆無法突破防線：</p>
+    <h2 class="sec-title">🛡️ 二、 黑客核心破解手法剖析與 Firestore 底層防線（Zero-Trust Defense）</h2>
+    <p>在真實的網路攻擊中，黑客不會依賴前端介面，而是會透過 <strong>API 封包構造、垂直提權請求、直接跨界存取</strong> 等專業手段嘗試破解系統。</p>
+    <p>本系統採用 <strong>「Firestore 伺服器端零信任（Zero-Trust Enforcement）」</strong> 的底層架構，所有安全性檢驗均在 Google 雲端伺服器端強制執行，黑客的任何專業攻擊手法都會在底層被徹底粉碎：</p>
 
     <div class="code-container">
-      <span class="code-title">【防禦審計對照表 (Server-Side Enforcement)】</span>
-【攻擊者客戶端嘗試 (按 F12 / API 腳本)】    【Google 伺服器端規則審計】             【結果】
-1. 傳送 payload 將 role 改為 'admin' ──➔  檢查: request.resource.data.role == 'member' ──➔ ❌ 403 拒絕提權
-2. 發起 Update 請求修改單據金額 ──────➔  檢查: allow update: if isSuperAdmin()        ──➔ ❌ 403 禁止修改
-3. 嘗試讀取非本人 UID 的收據圖檔 ────➔  檢查: request.auth.uid == userId               ──➔ ❌ 403 阻斷讀取
-4. 在輸入欄位夾帶 XSS 惡意腳本 ────────➔  前端: escapeHtml() 轉義為純文字實體編碼        ──➔ 🛡️ 腳本失效
+      <span class="code-title">【黑客攻擊嘗試 vs Google Firestore 底層防線審計】</span>
+【黑客攻擊手法 / 封包嘗試】               【Firestore 底層規則審計 (Server-Side)】  【破解結果】
+1. 構造特製 API 將 role 欄位改為 'admin' ➔ 檢查: request.resource.data.role == 'member' ➔ ❌ 403 拒絕提權
+2. 發送非法 Update 封包竄改單據金額   ➔ 檢查: allow update: if isSuperAdmin()        ➔ ❌ 403 禁止修改
+3. 偽造路徑嘗試讀取他人 UID 的圖片     ➔ 檢查: request.auth.uid == userId               ➔ ❌ 403 阻斷讀取
+4. 網頁檢視/F12 工具夾帶 XSS 惡意腳本 ➔ 前端: escapeHtml() 轉義為純文字實體編碼        ➔ 🛡️ 腳本無效
     </div>
 
-    <h3>❌ 嘗試 1：想按 F12 / API 繞過介面偷睇其他人的收據相片？</h3>
-    <p><strong>Google 伺服器審計：</strong> 檢查 <code>request.auth.uid == userId</code>。</p>
-    <p><strong>防禦結果：</strong> <strong>❌ 403 阻斷讀取！</strong> 每位會員都有一個獨立的專屬私密資料夾（<code>/claims/{userId}/{fileName}</code>）。伺服器只會認你本人嘅登入憑證，非該檔案擁有者（或管理員），Google 伺服器直接回絕，連 1 個 Byte 嘅資料都偷睇唔到。</p>
+    <h3>❌ 攻擊手法 1：垂直提權攻擊（Privilege Escalation）</h3>
+    <p><strong>黑客手法：</strong> 黑客在註冊或更新數據時，直接發送特製 JSON 封包，試圖將帳號權限（role）強行寫入為 <code>admin</code>。</p>
+    <p><strong>底層不可破解原因：</strong> Firestore Security Rules 在伺服器端死死鎖定 <code>request.resource.data.role == 'member'</code>。任何非管理員發起的權限變更請求，會在 Google 資料庫入口被第一時間阻斷並拋出 403 Permission Denied。</p>
 
-    <h3>❌ 嘗試 2：想按 F12 構造 Update 封包事後改大金額？</h3>
-    <p><strong>Google 伺服器審計：</strong> 檢查 <code>allow update: if isSuperAdmin()</code>。</p>
-    <p><strong>防禦結果：</strong> <strong>❌ 403 禁止修改！</strong> 一般會員喺伺服器端完全沒有任何修改權限。單據一旦建立，金額、幣別與匯率喺物理層面上即成為永久唯讀狀態（Immutable Ledger），杜絕改單報假帳。</p>
+    <h3>❌ 攻擊手法 2：財務數據竄改與重放攻擊（Financial Data Modification）</h3>
+    <p><strong>黑客手法：</strong> 單據提交後，黑客發送 API 封包，試圖調高報銷金額、改動匯率或抹除紀錄。</p>
+    <p><strong>底層不可破解原因：</strong> 一般會員在 Firestore 伺服器端完全沒有 Update 權限（<code>allow update: if isSuperAdmin()</code>）。單據一旦建立，金額與匯率在底層物理層面上即成為不可變動（Immutable Ledger）狀態。</p>
 
-    <h3>❌ 嘗試 3：想按 F12 發送腳本把自己升級做「管理員 Admin」？</h3>
-    <p><strong>Google 伺服器審計：</strong> 檢查 <code>request.resource.data.role == 'member'</code>。</p>
-    <p><strong>防禦結果：</strong> <strong>❌ 403 拒絕提權！</strong> 註冊與更新權限由伺服器端死死鎖定為一般會員，任憑前端點樣改，伺服器一律拒絕垂直提權（Privilege Escalation）。</p>
+    <h3>❌ 攻擊手法 3：越權讀取他人私密數據（Bypassing ACL & Row-Level Leak）</h3>
+    <p><strong>黑客手法：</strong> 黑客嘗試遍歷或猜測其他成員的 UID / 檔案路徑，試圖下載或窺探別人的敏感單據與圖片。</p>
+    <p><strong>底層不可破解原因：</strong> 所有圖片獨立存放於 <code>/claims/{userId}/{fileName}</code>。Storage 規則每次存取時嚴格校驗 <code>request.auth.uid == userId</code>。非本人或管理員，Google 伺服器在協定層直接拒絕，連 1 個 Byte 的資料都無法竊取。</p>
+
+    <h3>🔍 補充：針對純粹「好奇 / F12 網頁檢視」的防禦機制</h3>
+    <p>如果只是普通使用者好奇按鍵盤 <strong>F12（開發者工具）</strong> 檢視網頁原始碼或嘗試在輸入框寫程式碼：</p>
+    <ul>
+      <li><strong>XSS 消毒：</strong> 系統對所有輸入的文字字串實施 <code>escapeHtml()</code> 實體轉義，任何 HTML/JS 惡意腳本都會被轉化為純文字，無法運行。</li>
+      <li><strong>隔離保護：</strong> 前端 F12 看到的只是瀏覽器呈現的畫面，無法更改 Google 伺服器上的任何資料庫邏輯。</li>
+    </ul>
 
     <blockquote>
       💡 <strong>填錯嘢想修改點算？（單據生命週期與審核鎖定）</strong><br>
       • <strong>未審核階段（Unclaimed）：</strong> 只要管理員仲未批核入帳（<code>status == 'unclaimed'</code>），你可以隨時自行刪除填錯嘅單據再重新交過，非常彈性！<br>
       • <strong>已入帳階段（Claimed）：</strong> 一旦管理員審核轉為 <code>claimed</code>，系統處理邏輯自動撤銷一般會員嘅刪除權限，鎖定為正式財務歷史存檔，保障雙方誠信與權利！
     </blockquote>
-
-    <h3>❌ 嘗試 4：想喺輸入欄位夾帶 XSS 惡意代碼？</h3>
-    <p><strong>前端消毒：</strong> 所有渲染至網頁嘅文字均經過 <code>escapeHtml()</code> 轉義處理，惡意腳本完全無法運行。</p>
-    <p><strong>防重複提交：</strong> 按鈕於發送請求瞬間自動啟用 Disable 狀態，防止網絡波動導致重複寫入。</p>
   </section>
 
   <!-- 第三節 -->
@@ -298,7 +301,7 @@
           </tr>
           <tr>
             <td><strong>系統具備防範惡意攻擊的能力嗎？</strong></td>
-            <td>架構於 Google Firebase 企業級雲端之上，所有安全檢驗皆於伺服器端強制執行，按 F12 竄改完全無效。</td>
+            <td>架構於 Google Firebase 企業級雲端之上，所有安全檢驗皆於伺服器端強制執行，任何黑客封包與網頁檢視竄改完全無效。</td>
             <td><span class="status-badge">🔒 極高防護力</span></td>
           </tr>
         </tbody>
