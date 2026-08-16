@@ -15,7 +15,11 @@
       --border-color: rgba(255, 255, 255, 0.12);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -26,7 +30,7 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
-      overflow: hidden;
+      overflow-x: hidden;
       position: relative;
     }
 
@@ -41,6 +45,7 @@
       left: 15%;
       z-index: 1;
       animation: pulseCircle1 8s ease-in-out infinite alternate;
+      pointer-events: none;
     }
 
     .bg-circle-2 {
@@ -53,6 +58,7 @@
       right: 10%;
       z-index: 1;
       animation: pulseCircle2 10s ease-in-out infinite alternate;
+      pointer-events: none;
     }
 
     @keyframes pulseCircle1 {
@@ -108,6 +114,7 @@
       margin-bottom: 18px;
       background: linear-gradient(135deg, #ffffff 0%, #38bdf8 60%, #60a5fa 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -158,6 +165,10 @@
       box-shadow: 0 8px 35px rgba(0, 122, 255, 0.75);
     }
 
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+
     .btn-ripple {
       position: absolute;
       top: 50%; left: 50%;
@@ -168,6 +179,7 @@
       z-index: 1;
       opacity: 0.6;
       animation: rippleEffect 2.5s infinite;
+      pointer-events: none;
     }
 
     @keyframes rippleEffect {
@@ -203,7 +215,7 @@
     <!-- 呼吸按鈕直通 Dashboard -->
     <div class="btn-wrapper">
       <div class="btn-ripple"></div>
-      <a href="dashboard.html" class="start-btn">🚀 探索知識寶庫</a>
+      <a href="dashboard.html" class="start-btn" aria-label="探索知識寶庫">🚀 探索知識寶庫</a>
     </div>
   </div>
 
