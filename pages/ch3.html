@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chapter 3 - DeepSeek Harness (dsh) 終極開發實戰指南</title>
+  <title>DeepSeek Harness (dsh) & API 終極開發實戰全書</title>
   <style>
     :root {
       --bg-main: #f8fafc;
@@ -16,6 +16,9 @@
       --code-text: #38bdf8;
       --success-color: #10b981;
       --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --highlight-bg: #e7f5ff;
+      --highlight-border: #1c7ed6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,7 +31,7 @@
       line-height: 1.65;
     }
 
-    .container { max-width: 900px; margin: 0 auto; }
+    .container { max-width: 920px; margin: 0 auto; }
 
     header.doc-header {
       background: var(--card-bg);
@@ -86,6 +89,15 @@
     ul, ol { padding-left: 20px; }
     li { margin-bottom: 8px; }
 
+    code {
+      background-color: #f1f3f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.9em;
+      color: #d63384;
+    }
+
     .code-container {
       background: var(--code-bg);
       color: #f8fafc;
@@ -96,6 +108,12 @@
       overflow-x: auto;
       margin: 16px 0;
       line-height: 1.5;
+    }
+
+    .code-container code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
     }
 
     .code-title {
@@ -111,6 +129,7 @@
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
     th, td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); }
     th { background-color: #f8fafc; font-weight: 700; color: var(--text-main); }
+    tr:nth-child(even) { background-color: #f8fafc; }
 
     .step-grid {
       display: grid;
@@ -140,9 +159,17 @@
       margin-bottom: 12px;
     }
 
+    .sub-card {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
     .prompt-box-bad {
       background: #fee2e2;
-      border-left: 4px solid #ef4444;
+      border-left: 4px solid var(--danger-color);
       padding: 12px 16px;
       margin: 12px 0;
       border-radius: 0 8px 8px 0;
@@ -152,12 +179,36 @@
 
     .prompt-box-good {
       background: #ecfdf5;
-      border-left: 4px solid #10b981;
+      border-left: 4px solid var(--success-color);
       padding: 12px 16px;
       margin: 12px 0;
       border-radius: 0 8px 8px 0;
       font-size: 14px;
       color: #065f46;
+    }
+
+    .highlight-box {
+      background-color: var(--highlight-bg);
+      border-left: 4px solid var(--highlight-border);
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+
+    .badge-success {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .badge-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
     }
 
     blockquote {
@@ -175,11 +226,11 @@
 
 <div class="container">
   <header class="doc-header">
-    <span class="tag-badge">Chapter 3 ・ 工具實戰指南</span>
-    <h1>📚 DeepSeek Harness (dsh)<br>終極開發實戰全書</h1>
+    <span class="tag-badge">全方位實戰手冊</span>
+    <h1>📚 DeepSeek Harness (dsh) & API<br>終極開發實戰全書</h1>
     <div class="notice-box">
-      這是一份超詳細、全方位進階版的 <strong>DeepSeek Harness (dsh) 與 GitHub 開發實戰指南</strong>。<br>
-      本手冊補充了更多底層架構、命令細節、進階技巧與問題排解（Troubleshooting），方便你長期查閱與實作。
+      這是一份完整的 <strong>DeepSeek Harness (dsh)、API 配置、多專案識別、圖像處理與高強度費用估算指南</strong>。
+      已整合底層運作機制、圖文安裝步驟、提問公式、多專案隔離技巧以及成本估算，方便長期查閱與實作。
     </div>
   </header>
 
@@ -187,11 +238,11 @@
   <section class="page-sec">
     <h2 class="sec-title">📖 第一章：核心概念與工具定位</h2>
     <h3>1.1 DeepSeek Harness (dsh) 到底是什麼？</h3>
-    <p>DeepSeek Harness 是 DeepSeek 官方為開發者設計的 <strong>自主 Agent（智能代理）開發測試框架</strong>。它的標語是 <code>"Everything is a Plugin"</code>（一切皆插件）。</p>
+    <p>DeepSeek Harness 是 DeepSeek 官方為開發者設計的 <strong>自主 Agent（智能代理）開發測試框架</strong>。 它的標語是 <code>"Everything is a Plugin"</code>（一切皆插件）。</p>
     <p>與傳統的 AI 工具相比，它的定位非常鮮明：</p>
     <ul>
-      <li><strong>雲端對話 AI（如 ChatGPT / DeepSeek 網頁版）：</strong> 被動式問答，只能提供程式碼文字，需要手動複製貼上。適合問問題、查資料、撰寫文章。</li>
-      <li><strong>通用雲端 Agent（如 Manus）：</strong> 在雲端虛擬機全自動執行任務（搜集資料、寫報告）。適合完全交由雲端處理的全自動工作，但無法直接存取與修改你本地電腦的專案檔案。</li>
+      <li><strong>雲端對話 AI（如 ChatGPT / DeepSeek 網頁版）：</strong> 被動式問答，只能提供程式碼文字，需要手動複製貼上。 適合問問題、查資料、撰寫文章。</li>
+      <li><strong>通用雲端 Agent（如 Manus）：</strong> 在雲端虛擬機全自動執行任務（搜集資料、寫報告）。 適合完全交由雲端處理的全自動工作，但無法直接存取與修改你本地電腦的專案檔案。</li>
       <li><strong>本地寫程式 Agent（DeepSeek Harness）：</strong> 綁定你電腦的 VS Code 工作區（Folder），具備 <strong>檔案讀寫</strong> 與 <strong>Terminal 指令執行</strong> 權限，直接在你電腦上幫你寫網站、改 Code、安裝套件與除錯。</li>
     </ul>
   </section>
@@ -261,7 +312,7 @@
         <p>點擊 Terminal ➔ New Terminal，輸入以下指令：</p>
         <div class="code-container">
           <span class="code-title">Terminal Command</span>
-npx @deepseek-ai/dsh web
+          <code>npx @deepseek-ai/dsh web</code>
         </div>
         <p>提示安裝打 <code>y</code>，顯示 <code>http://127.0.0.1:3080</code> 即啟動成功。</p>
       </div>
@@ -297,7 +348,7 @@ npx @deepseek-ai/dsh web
 
     <h3>5.2 四大開發策略</h3>
     <ul>
-      <li><strong>增量開發 (Incremental Development)：</strong> 切勿一次給予過龐大的需求（如：「幫我做一個 Facebook」）。應拆解成小步快跑：先做登入框 ➔ 再做黑夜模式 ➔ 再做響應式排版。</li>
+      <li><strong>增量開發 (Incremental Development)：</strong> 切勿一次給予過龐大的需求（如：「幫我做一個 Facebook」）。 應拆解成小步快跑：先做登入框 ➔ 再做黑夜模式 ➔ 再做響應式排版。</li>
       <li><strong>明確指定改動檔案：</strong> 若只需調整樣式，明確告知：「請只針對 <code>assets/style.css</code> 進行修改。」</li>
       <li><strong>善用版本控制備份：</strong> 在進行大範圍改動前，先複製一份專案資料夾備份，或執行 <code>git commit</code>，方便改砸時一鍵復原。</li>
       <li><strong>日後開發極簡 3 步驟：</strong>
@@ -345,6 +396,199 @@ npx @deepseek-ai/dsh web
           </tr>
         </tbody>
       </table>
+    </div>
+  </section>
+
+  <!-- 第七章 -->
+  <section class="page-sec">
+    <h2 class="sec-title">📁 第七章：如何讓 AI（dsh）精準識別不同專案？</h2>
+    <p>如果你的電腦上有多個專案，想要讓 AI 工具（例如 DeepSeek CLI / <code>dsh</code>）明確知道你現在是在討論或修改哪一個專案，最直接且有效的方法有以下 3 個操作層面的做法：</p>
+
+    <div class="sub-card">
+      <h3>1. 最推薦：將 Terminal 切換到該專案的資料夾再啟動</h3>
+      <p><code>dsh</code> 啟動時會以你目前 Terminal 所在的資料夾（工作目錄 Working Directory）作為基準。</p>
+      <p><strong>如果你想處理 Project A：</strong></p>
+      <p>先在 Terminal 切換到 Project A 的路徑：</p>
+      <div class="code-container">
+        <span class="code-title">Bash Command</span>
+        <code>cd /path/to/your/ProjectA</code>
+      </div>
+      <p>再執行啟動指令：</p>
+      <div class="code-container">
+        <span class="code-title">Bash Command</span>
+        <code>npx @deepseek-ai/dsh web</code>
+      </div>
+      <p>這樣工具在讀取專案環境、搜尋區域檔案或執行專案內指令時，就會嚴格鎖定在 Project A。</p>
+    </div>
+
+    <div class="sub-card">
+      <h3>2. 在 VS Code 中分別打開專案 Terminal</h3>
+      <p>如果你習慣使用 VS Code：</p>
+      <ol>
+        <li>在 VS Code 打開 Project A 的視窗。</li>
+        <li>點擊頂部選單 <strong>Terminal -> New Terminal</strong>（新終端機）。</li>
+        <li>此時終端機預設就會在 Project A 的目錄下，直接輸入：
+          <div class="code-container">
+            <span class="code-title">Bash Command</span>
+            <code>npx @deepseek-ai/dsh web</code>
+          </div>
+        </li>
+        <li>如果要換成 Project B，就在 VS Code 開啟 Project B 的視窗，並重複相同步驟即可。</li>
+      </ol>
+    </div>
+
+    <div class="sub-card">
+      <h3>3. 在 Prompt（提示詞）中明確指定專案名稱或檔案路徑</h3>
+      <p>如果你不想頻繁切換 Terminal，或者同時打開了多個專案，可以直接在對話中加上上下文說明：</p>
+      <ul>
+        <li><strong>明確指定專案名稱：</strong><br>
+          <code>「我們現在要處理的是 Project A（例如：my-frontend-app），請幫我檢查這段 code...」</code></li>
+        <li><strong>提供具體檔案路徑：</strong><br>
+          <code>「請幫我看 ./ProjectA/src/components/Header.jsx 這個檔案...」</code></li>
+      </ul>
+    </div>
+
+    <h3>💡 多專案總結操作策略</h3>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>需求場景</th>
+            <th>最佳做法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>希望 AI 能讀取/修改指定專案檔案</strong></td>
+            <td>在 VS Code 開啟該專案，於內建 Terminal 執行 <code>npx @deepseek-ai/dsh web</code></td>
+          </tr>
+          <tr>
+            <td><strong>只想問通用技術問題或純 Code 邏輯</strong></td>
+            <td>在任何 Terminal 啟動皆可，對話中直接貼上相關程式碼即可</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 第八章 -->
+  <section class="page-sec">
+    <h2 class="sec-title">🖼️ 第八章：圖像處理能力與替代方案</h2>
+    <p>簡短的回答是：<strong>DeepSeek 官方的 API 現階段是「純文字（Text-only）」模型</strong>，它無法直接閱讀圖片（Pixels），也無法直接繪製/生成圖片。</p>
+    <p>但你可以透過「組合拳 / 轉換」的方式，讓它間接幫你處理圖像任務！以下拆解它的運作機制與解決方案：</p>
+
+    <h3>1. 如果你想「給它看圖片（圖片輸入）」</h3>
+    <p>你不能直接把 PNG / JPG 的圖片或圖片連結（URL）傳給 DeepSeek API。</p>
+    <div class="sub-card">
+      <p><strong>🛠️ 解決方案：先轉文字（OCR / 描述），再給 DeepSeek</strong></p>
+      <p>你可以在專案裡加上一個「圖像識別 Adapter」：</p>
+      <ol>
+        <li><strong>圖片傳給 OCR / Vision 模型：</strong>先用免費或專門的視訊 API（例如 Google Vision, GPT-4o, 或本地的 OCR 工具）將圖片中的文字提取出來，或者將圖片內容轉換成文字描述。</li>
+        <li><strong>文字傳給 DeepSeek：</strong>把你獲得的「文字描述 / 提取出來的文字」餵給 DeepSeek。</li>
+        <li><strong>DeepSeek 進行邏輯處理：</strong>DeepSeek 收到這些文字後，就能幫你分析、除 Bug、重構程式碼，或是翻譯和排版了！</li>
+      </ol>
+    </div>
+
+    <h3>2. 如果你「用文字描繪圖像（圖像詞語）」</h3>
+    <p>如果你是用文字向它描述圖像特徵（例如：<em>「這是一張藍色背景、中間有一個紅色按鈕的 UI 截圖」</em>），DeepSeek 完全可以處理！</p>
+    <ul>
+      <li><strong>它可以做：</strong>根據你的文字描述，幫你寫出對應的 HTML / CSS / Tailwind 程式碼來還原那個畫面；或者幫你寫出 Prompt（提示詞），讓你拿去 Midjourney / Stable Diffusion 生成圖片。</li>
+      <li><strong>它不能做：</strong>它無法直接輸出一張 .jpg 或 .png 圖檔（它不是 DALL-E 或 Stable Diffusion 這種生成式畫圖模型）。</li>
+    </ul>
+
+    <h3>💡 圖像能力總結</h3>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>需求</th>
+            <th>DeepSeek API 做到嗎？</th>
+            <th>建議做法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>直接上傳截圖要它看</strong></td>
+            <td><span class="badge-danger">❌ 不支援</span></td>
+            <td>先用 OCR 工具把圖片轉文字，再傳文字給 DeepSeek</td>
+          </tr>
+          <tr>
+            <td><strong>用文字描述畫面要它寫 Code</strong></td>
+            <td><span class="badge-success">✅ 超強</span></td>
+            <td>直接把文字描述（提示詞）發給 DeepSeek，讓它生成 HTML/CSS/React</td>
+          </tr>
+          <tr>
+            <td><strong>叫 AI 生出真實圖片檔</strong></td>
+            <td><span class="badge-danger">❌ 不支援</span></td>
+            <td>用 DeepSeek 幫你寫出「繪圖 Prompt」，再拿去專門的畫圖 AI 算圖</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      👉 <strong>補充建議：</strong>如果你想做的是「給它看 UI 截圖，讓它自動寫出 Code」，可以考慮在你的專案中串接 <strong>Google Gemini API</strong>，它本身就原生支援免費/平價的圖像辨識能力！
+    </div>
+  </section>
+
+  <!-- 第九章 -->
+  <section class="page-sec">
+    <h2 class="sec-title">💰 第九章：極高強度使用費用估算 (每月 1,500 次對話)</h2>
+    <p>如果按照你極高強度的使用情境：<strong>每次都讀寫幾千行 Code、每日提問 50 次、連續使用 1 個月（按 30 天算，共 1,500 次對話）</strong>，費用預估如下：</p>
+
+    <h3>1. 數據與 Token 換算</h3>
+    <p>以每次處理大型檔案（約 3,000 ~ 5,000 行 Code）來計算：</p>
+    <ul>
+      <li><strong>單次輸入 (Input)：</strong>檔案上下文 + 提示詞 ≈ <strong>100,000 Tokens</strong>（10 萬字）</li>
+      <li><strong>單次輸出 (Output)：</strong>AI 產生的修訂程式碼 ≈ <strong>10,000 Tokens</strong>（1 萬字）</li>
+    </ul>
+
+    <div class="sub-card">
+      <p><strong>總用量（1 個月 / 1,500 次對話）：</strong></p>
+      <ul>
+        <li><strong>總輸入：</strong>100,000 × 1,500 = <strong>1.5 億 Tokens</strong> (150 Million)</li>
+        <li><strong>總輸出：</strong>10,000 × 1,500 = <strong>1,500 萬 Tokens</strong> (15 Million)</li>
+      </ul>
+    </div>
+
+    <h3>2. 估算一個月的費用</h3>
+    <p>DeepSeek API 在開發寫 Code 時，會大幅觸發 <strong>Context Caching（快取機制）</strong>，重複讀取同一份檔案時，輸入價格會直接打折扣（快取命中只需約 10% 費用）。</p>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>模型等級</th>
+            <th>未算快取折扣（最高上限）</th>
+            <th>加上快取折扣（實際預估）</th>
+            <th>換算港幣 (HKD)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>DeepSeek V4 Flash</strong><br><small>(平價/極速版，日常改 Code 首選)</small></td>
+            <td>約 $25.2 美金</td>
+            <td><strong>約 $10 - $15 美金</strong></td>
+            <td><strong>約 $78 - $117 HKD / 月</strong></td>
+          </tr>
+          <tr>
+            <td><strong>DeepSeek V4 Pro</strong><br><small>(旗艦版，適合極複雜邏輯)</small></td>
+            <td>約 $78.3 美金</td>
+            <td><strong>約 $30 - $45 美金</strong></td>
+            <td><strong>約 $234 - $351 HKD / 月</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <h3>💡 費用總結與建議</h3>
+      <p>即使你每天瘋狂提問 50 次、每次都拿幾千行 Code 來改：</p>
+      <ul>
+        <li><strong>選用 Flash 模型：</strong>一個月總花費大概只需要 <strong>$100 港幣左右</strong>。</li>
+        <li><strong>選用 Pro 旗艦模型：</strong>一個月總花費大概只需要 <strong>$250 - $350 港幣左右</strong>。</li>
+      </ul>
+      <p>對比其他 AI（例如 ChatGPT Plus 每月固定 $20 美金，且有限制提問次數），使用 DeepSeek API 的好處是<strong>用多少扣多少，不會有次數封頂限制，價格依舊非常劃算！</strong></p>
     </div>
   </section>
 </div>
