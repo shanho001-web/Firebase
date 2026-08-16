@@ -1,17 +1,320 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <title>Chapter 3</title>
-  <style>
-    body { font-family: -apple-system, sans-serif; background: #f8fafc; padding: 50px 20px; text-align: center; color: #64748b; }
-    .card { background: white; padding: 60px 20px; border-radius: 16px; border: 2px dashed #e2e8f0; max-width: 600px; margin: auto; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek Harness (dsh) 終極開發實戰全書</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #e2e8f0;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --code-bg: #0f172a;
+            --border-color: #334155;
+            --warning-color: #f59e0b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-top: 0;
+            font-size: 2em;
+        }
+
+        h2 {
+            color: #f8fafc;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 12px;
+            margin-top: 35px;
+            font-size: 1.4em;
+        }
+
+        h3 {
+            color: #94a3b8;
+            margin-top: 25px;
+            font-size: 1.1em;
+        }
+
+        p, li {
+            font-size: 1rem;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        code {
+            background-color: var(--code-bg);
+            color: var(--accent-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: "Fira Code", Monaco, Consolas, monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        pre code {
+            padding: 0;
+            background-color: transparent;
+            color: #e2e8f0;
+        }
+
+        blockquote {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid var(--accent-color);
+            margin: 20px 0;
+            padding: 12px 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .alert-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning-color);
+            padding: 12px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--code-bg);
+            color: var(--accent-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            table, th, td {
+                font-size: 0.85em;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <h2>📌 Chapter 3：預留位置</h2>
-    <p>未來要新增第三個專案教學，只需要將內容放進 <code>pages/ch3.html</code> 即可！</p>
-  </div>
+
+<div class="container">
+    <h1>📚 DeepSeek Harness (dsh) 終極開發實戰全書</h1>
+
+    <h2>📖 第一章：核心概念與工具定位</h2>
+    
+    <h3>1.1 DeepSeek Harness (dsh) 到底是什麼？</h3>
+    <p><code>DeepSeek Harness</code> 是 DeepSeek 官方為開發者設計的 <strong>自主 Agent（智能代理）開發測試框架</strong>。它的標語是 <strong>"Everything is a Plugin"（一切皆插件）</strong>。</p>
+    
+    <p>與傳統的 AI 工具相比，它的定位非常鮮明：</p>
+    <ul>
+        <li><strong>雲端對話 AI（如 ChatGPT / DeepSeek 網頁版）</strong>：被動式問答，只能提供程式碼文字，需要手動複製貼上。適合問問題、查資料、撰寫文章。</li>
+        <li><strong>通用雲端 Agent（如 Manus）</strong>：在雲端虛擬機全自動執行任務（搜集資料、寫報告）。適合完全交由雲端處理的全自動工作，但<strong>無法直接存取與修改你本地電腦的專案檔案</strong>。</li>
+        <li><strong>本地寫程式 Agent（DeepSeek Harness）</strong>：綁定你電腦的 VS Code 工作區（Folder），具備 <strong>檔案讀寫</strong> 與 <strong>Terminal 指令執行</strong> 權限，直接在你電腦上幫你寫網站、改 Code、安裝套件與除錯。</li>
+    </ul>
+
+    <h2>🔒 第二章：安全性與運作機制拆解</h2>
+    
+    <h3>2.1 運作架構（混合分工）</h3>
+    <ul>
+        <li><strong>本地端（你的電腦）</strong>：
+            <ul>
+                <li>執行 UI 控制介面（網址：<code>http://127.0.0.1:3080</code>）。</li>
+                <li>讀取/寫入 VS Code 打開的專案資料夾。</li>
+                <li>在你的許可下，於本地 Terminal 執行編譯或套件安裝指令。</li>
+            </ul>
+        </li>
+        <li><strong>雲端（DeepSeek 大腦 API）</strong>：
+            <ul>
+                <li>接收你的自然語言指令與程式碼上下文，進行高階邏輯推理並生成修改方案。</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>2.2 安全機制與沙盒保護（Sandbox）</h3>
+    <ul>
+        <li><strong>工作區邊界（Workspace Restriction）</strong>：AI 被嚴格鎖定在你使用 VS Code 開啟的那個資料夾內，<strong>絕不可能</strong>越界去修改你桌面、下載區或系統硬碟的其他檔案。</li>
+        <li><strong>審核政策（Approval Policy）</strong>：當 AI 嘗試寫入檔案或跑敏感命令時，網頁介面上會跳出確認提示（Ask Approval），你點擊授權後才會執行。</li>
+        <li><strong>多檔案連動修改</strong>：你只需提出「最終需求」（例如：<em>「新增登入功能」</em>），AI 會自主掃描資料夾內的所有檔案，判斷 HTML、CSS、JS 各需要修改哪些地方，並一次過自動完成。</li>
+    </ul>
+
+    <h2>🔑 第三章：申請 DeepSeek API Key（圖文級步驟）</h2>
+    
+    <ol>
+        <li><strong>進入官網</strong>：打開瀏覽器前往 <a href="https://platform.deepseek.com" target="_blank">https://platform.deepseek.com</a>。</li>
+        <li><strong>帳號註冊</strong>：點選 <code>Sign Up</code>，可使用 Google 帳號一鍵登入，或輸入手機號碼/Email 註冊。</li>
+        <li><strong>建立金鑰</strong>：
+            <ul>
+                <li>登入後點選左側選單 <code>API keys</code>。</li>
+                <li>點擊 <code>Create new secret key</code> 按鈕。</li>
+                <li>輸入自訂名稱（如 <code>My-VSCode-DSH</code>），點擊 <code>Create</code>。</li>
+            </ul>
+        </li>
+        <li><strong>保存 Key</strong>：
+            <ul>
+                <li>畫面會彈出一串以 <code>sk-</code> 開頭的字串（如 <code>sk-123456789abcdef...</code>）。</li>
+                <li>點擊 <code>Copy</code> 並<strong>獨立貼到記事本備份</strong>。</li>
+            </ul>
+            <div class="alert-warning">
+                ⚠️ <strong>特別注意：</strong> 該視窗關閉後將無法再查看完整 Key！
+            </div>
+        </li>
+        <li><strong>確認用量</strong>：點選左側 <code>Usage</code> 或 <code>Top up</code>，新帳號通常享有免費贈送的 Token 額度，額度用完後充值極為便宜（改一次網站約花費幾分錢）。</li>
+    </ol>
+
+    <h2>🛠️ 第四章：新手一步一步安裝與啟動教學</h2>
+
+    <h3>步驟 1：在 VS Code 中開啟專案</h3>
+    <ol>
+        <li>打開 VS Code 編輯器。</li>
+        <li>點擊頂部選單 <code>File</code> ➔ <code>Open Folder...</code>（開啟資料夾）。</li>
+        <li>選擇你存放網站檔案（如含有 <code>index.html</code>）的目標資料夾。</li>
+    </ol>
+
+    <h3>步驟 2：啟動背景 AI 服務</h3>
+    <ol>
+        <li>點擊頂部選單 <code>Terminal</code> ➔ <code>New Terminal</code>（新建終端機）。</li>
+        <li>在視窗下方的黑色終端機面板中，輸入以下指令並按 <strong>Enter</strong>：
+            <pre><code>npx @deepseek-ai/dsh web</code></pre>
+        </li>
+        <li><em>若系統提示 <code>Need to install the following packages...</code>，請打 <code>y</code> 並按 Enter。</em></li>
+        <li>當終端機顯示出 <code>http://127.0.0.1:3080</code> 時，表示本地背景服務成功啟動（<strong>請保持這個終端機視窗開啟，不要關閉</strong>）。</li>
+    </ol>
+
+    <h3>步驟 3：進入 Web UI 介面並配置</h3>
+    <ol>
+        <li>打開瀏覽器（Chrome 或 Safari），網址列輸入：<code>http://127.0.0.1:3080</code>。</li>
+        <li><strong>填入 API Key</strong>：點選介面中的 <code>Settings</code> ➔ <code>Models</code>，將 <code>sk-</code> 開頭的金鑰貼入並儲存。</li>
+        <li><strong>選擇工作區</strong>：點擊 <code>Choose Workspace</code>，指定你在 VS Code 中開啟的那個網站資料夾。</li>
+    </ol>
+
+    <h3>步驟 4：開始對話與檢視成果</h3>
+    <ol>
+        <li>在網頁介面的輸入框用廣東話或中文下達指令：
+            <blockquote>💬 <em>「幫我在 <code>index.html</code> 頂部新增一個導覽列，並將 <code>style.css</code> 中的按鈕設置為圓角樣式。」</em></blockquote>
+        </li>
+        <li>送出後，AI 會自動處理檔案。</li>
+        <li>處理完成後切換回 VS Code，左側檔案與程式碼已<strong>自動寫入並更新</strong>！</li>
+    </ol>
+
+    <h2>💡 第五章：進階提問公式與 4 大高效開發策略</h2>
+
+    <h3>5.1 最佳提問公式（Prompt Formula）</h3>
+    <p>下指令時遵循：<strong>「背景 + 目標 + 限制」</strong>，產出結果最精準。</p>
+
+    <ul>
+        <li>❌ <strong>反面範例</strong>：<em>「幫我改好這個網站。」</em>（太模糊，AI 容易自由發揮改壞東西）</li>
+        <li>✅ <strong>正面範例</strong>：
+            <blockquote>
+                <em>「【背景】這是一個履歷網站。<br>
+                【目標】請在頁面底部新增一個 Contact Form 表單，包含 Name、Email 與 Message 輸入框。<br>
+                【限制】請只修改 <code>index.html</code> 與 <code>style.css</code>，不要改動 <code>assets/</code> 資料夾內的任何圖片檔案。」</em>
+            </blockquote>
+        </li>
+    </ul>
+
+    <h3>5.2 四大開發策略</h3>
+    <ol>
+        <li><strong>增量開發 (Incremental Development)</strong>：切勿一次給予過龐大的需求。應拆解成小步快跑：先做登入框 ➔ 再做黑夜模式 ➔ 再做響應式排版。</li>
+        <li><strong>明確指定改動檔案</strong>：若只需調整樣式，明確告知：<em>「請只針對 <code>assets/style.css</code> 進行修改。」</em></li>
+        <li><strong>善用版本控制備份</strong>：在進行大範圍改動前，先複製一份專案資料夾備份，或執行 <code>git commit</code>，方便改砸時一鍵復原。</li>
+        <li><strong>日後開發極簡 3 步驟</strong>：
+            <ul>
+                <li><strong>VS Code</strong>：開啟 Folder ➔ 執行 <code>npx @deepseek-ai/dsh web</code></li>
+                <li><strong>瀏覽器</strong>：開啟 <code>http://127.0.0.1:3080</code> 下指令</li>
+                <li><strong>VS Code</strong>：切回查看並測試改好的 Code！</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>❓ 第六章：常見問題與排障指南 (Troubleshooting)</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>遇到的問題 / 報錯</th>
+                <th>原因分析</th>
+                <th>解決方法</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>打不開 <code>127.0.0.1:3080</code></strong></td>
+                <td>VS Code 裡的 Terminal 服務未啟動或被關閉了。</td>
+                <td>回到 VS Code Terminal，重新執行 <code>npx @deepseek-ai/dsh web</code>，並確保 Terminal 視窗維持開啟。</td>
+            </tr>
+            <tr>
+                <td><strong>提示 <code>npx: command not found</code></strong></td>
+                <td>電腦尚未安裝 Node.js 環境。</td>
+                <td>請前往 <a href="https://nodejs.org" target="_blank">nodejs.org</a> 下載並安裝 LTS 版本的 Node.js。</td>
+            </tr>
+            <tr>
+                <td><strong>AI 提示 API Key 無效或欠費</strong></td>
+                <td>Key 輸入錯誤，或 DeepSeek 帳號額度已耗盡。</td>
+                <td>檢查 <code>Settings</code> 中的 Key 是否複製完整；前往 DeepSeek 官網後台檢查 <code>Usage</code> 或小額充值。</td>
+            </tr>
+            <tr>
+                <td><strong>AI 改出來的 Code 跑出 Bug</strong></td>
+                <td>需求描述有歧義，或上下文不夠清晰。</td>
+                <td>在網頁介面複製錯誤訊息貼給 AI：<em>「執行後出現此報錯，請修正 <code>script.js</code> 中的邏輯。」</em></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>
