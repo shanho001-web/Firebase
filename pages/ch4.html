@@ -1,0 +1,362 @@
+import os
+
+# Create combined HTML content including the requested items:
+# 1. macOS Homebrew & PATH setup steps
+# 2. cd / Documents folder navigation guide (specifically cd ~/Documents)
+# 3. Handling file names with spaces ("我的影片 3.m4a")
+# 4. Correcting typos (brew vs rew)
+# 5. Full integrated existing HTML content
+
+html_content = """<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FFmpeg 常用指令與 Mac 操作全攻略（包含實戰範例）</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --code-bg: #f1f5f9;
+      --accent: #d97706;
+      --accent-bg: #fffbe2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #dbeafe;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin: 1.2rem 0 0.6rem;
+      color: #1e40af;
+    }
+
+    pre, code {
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", Menlo, Consolas, monospace;
+      font-size: 0.875rem;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 0.5rem 0 1rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    code.inline {
+      background: var(--code-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8rem 0;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.7rem 0.9rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eff6ff;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .tips {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 1rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin-top: 1rem;
+    }
+
+    .tips ul {
+      margin-left: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .tips li {
+      margin-bottom: 0.3rem;
+    }
+
+    .warning {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 1rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin-top: 1rem;
+    }
+
+    .warning ul {
+      margin-left: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 1rem 0.5rem; }
+      h1 { font-size: 1.5rem; }
+      th, td { padding: 0.5rem; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>FFmpeg 常用指令與 Mac 操作全攻略</h1>
+      <p class="subtitle">Homebrew 安裝與 PATH 設定 × 資料夾切換 × MP3 / MP4 音影片壓縮速查</p>
+    </header>
+
+    <!-- 一、安裝與環境設定 -->
+    <section>
+      <h2>一、安裝 FFmpeg 與 Mac 環境設定</h2>
+      
+      <h3>1. 安裝 Homebrew</h3>
+      <p>打開 Mac 終端機（Terminal），貼上並執行：</p>
+      <pre>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</pre>
+      <p>※ 提示 <code class="inline">Password:</code> 時，請輸入 Mac 開機密碼（輸入時畫面上不會顯示任何符號，盲打完按 Enter 即可）。出現提示時再按 Enter 繼續。</p>
+
+      <h3>2. 設定 PATH 環境變數（解決 command not found: brew）</h3>
+      <p>安裝完成後，務必執行以下兩行指令將 Homebrew 加入 PATH，否則系統會找不到 <code class="inline">brew</code>：</p>
+      <pre>echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"</pre>
+
+      <h3>3. 安裝 FFmpeg</h3>
+      <pre>brew install ffmpeg</pre>
+
+      <h3>4. 檢查是否安裝成功</h3>
+      <pre>ffmpeg -version</pre>
+    </section>
+
+    <!-- 二、Terminal 基礎操作與切換資料夾 -->
+    <section>
+      <h2>二、Terminal 基礎操作與資料夾切換</h2>
+
+      <h3>1. 常用資料夾切換指令</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 35%;">用途</th>
+            <th>指令</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>進入「文件」資料夾 (Documents)</td>
+            <td><code>cd ~/Documents</code></td>
+          </tr>
+          <tr>
+            <td>進入「下載」資料夾 (Downloads)</td>
+            <td><code>cd ~/Downloads</code></td>
+          </tr>
+          <tr>
+            <td>進入「桌面」 (Desktop)</td>
+            <td><code>cd ~/Desktop</code></td>
+          </tr>
+          <tr>
+            <td>列出目前資料夾的所有檔案</td>
+            <td><code>ls</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>2. 實戰操作範例（針對含有空格的檔名）</h3>
+      <p>若你的檔案位於「文件」資料夾，名稱為 <code class="inline">我的影片 3.m4a</code>，請照以下步驟操作：</p>
+      <pre># 1. 進入文件資料夾
+cd ~/Documents
+
+# 2. 確認檔案是否存在
+ls "我的影片 3.m4a"
+
+# 3. 將 m4a 轉為 mp3 壓縮檔
+ffmpeg -i "我的影片 3.m4a" -c:a libmp3lame -b:a 128k "我的影片 3.mp3"</pre>
+
+      <div class="warning">
+        <strong>常見錯誤提醒：</strong>
+        <ul>
+          <li><strong>拼字錯誤</strong>：請使用 <code class="inline">brew</code> 而非 <code class="inline">rew</code>。</li>
+          <li><strong>空格處理</strong>：檔名有空格時（如 <code class="inline">我的影片 3.m4a</code>），一定要用雙引號 <code class="inline">" "</code> 包起來。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 三、MP3 音訊指令 -->
+    <section>
+      <h2>三、常用 MP3 / 音訊指令</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 30%;">用途</th>
+            <th>指令</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>標準壓縮 128k</td>
+            <td><code>ffmpeg -i 輸入.mp3 -c:a libmp3lame -b:a 128k 輸出.mp3</code></td>
+          </tr>
+          <tr>
+            <td>較小檔案 96k</td>
+            <td><code>ffmpeg -i 輸入.mp3 -c:a libmp3lame -b:a 96k 輸出.mp3</code></td>
+          </tr>
+          <tr>
+            <td>語音用 64k</td>
+            <td><code>ffmpeg -i 輸入.mp3 -c:a libmp3lame -b:a 64k 輸出.mp3</code></td>
+          </tr>
+          <tr>
+            <td>VBR 動態碼率壓縮（推薦）</td>
+            <td><code>ffmpeg -i 輸入.mp3 -c:a libmp3lame -q:a 4 輸出.mp3</code></td>
+          </tr>
+          <tr>
+            <td>轉單聲道 + 壓縮</td>
+            <td><code>ffmpeg -i 輸入.mp3 -c:a libmp3lame -b:a 64k -ac 1 輸出.mp3</code></td>
+          </tr>
+          <tr>
+            <td>從影片抽出 MP3</td>
+            <td><code>ffmpeg -i 輸入.mp4 -vn -c:a libmp3lame -b:a 128k 輸出.mp3</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 四、MP4 影片指令 -->
+    <section>
+      <h2>四、常用 MP4 / 影片指令</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 30%;">用途</th>
+            <th>指令</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>YouTube 用（品質較好）</td>
+            <td><code>ffmpeg -i 輸入.mp4 -c:v libx264 -crf 20 -preset medium -c:a aac -b:a 192k -movflags +faststart 輸出.mp4</code></td>
+          </tr>
+          <tr>
+            <td>網站用（檔案較小）</td>
+            <td><code>ffmpeg -i 輸入.mp4 -c:v libx264 -crf 26 -preset medium -c:a aac -b:a 128k -movflags +faststart 輸出.mp4</code></td>
+          </tr>
+          <tr>
+            <td>更小檔案（720p）</td>
+            <td><code>ffmpeg -i 輸入.mp4 -vf scale=1280:-2 -c:v libx264 -crf 28 -preset medium -c:a aac -b:a 96k -movflags +faststart 輸出.mp4</code></td>
+          </tr>
+          <tr>
+            <td>高壓縮（檔案最小）</td>
+            <td><code>ffmpeg -i 輸入.mp4 -c:v libx264 -crf 32 -preset medium -c:a aac -b:a 96k -movflags +faststart 輸出.mp4</code></td>
+          </tr>
+          <tr>
+            <td>只轉碼音訊（最快）</td>
+            <td><code>ffmpeg -i 輸入.mp4 -c:v copy -c:a aac -b:a 128k 輸出.mp4</code></td>
+          </tr>
+          <tr>
+            <td>轉成 H.265（更小）</td>
+            <td><code>ffmpeg -i 輸入.mp4 -c:v libx265 -crf 28 -preset medium -c:a aac -b:a 128k 輸出.mp4</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 五、其他與使用提醒 -->
+    <section>
+      <h2>五、使用提醒與技巧</h2>
+      <div class="tips">
+        <ul>
+          <li>先用 <code class="inline">cd</code> 進入檔案所在資料夾（如 <code class="inline">cd ~/Documents</code>）</li>
+          <li>把指令中的 <code class="inline">輸入.mp3</code> / <code class="inline">輸入.mp4</code> 改成你的實際檔名</li>
+          <li>檔名有空格時請加引號，例如 <code class="inline">"我的影片 3.m4a"</code></li>
+          <li>執行後按 <code class="inline">Enter</code>，完成後同資料夾會出現新檔案</li>
+          <li>中斷執行可按 <code class="inline">Control + C</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      FFmpeg 常用指令與 Mac 操作整合手冊 · 可直接保存為 .html 檔案隨時查閱
+    </footer>
+  </div>
+</body>
+</html>
+"""
+
+output_path = "ffmpeg-cheatsheet.html"
+with open(output_path, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print(f"File generated successfully: {output_path}")
