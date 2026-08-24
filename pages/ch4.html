@@ -1,13 +1,4 @@
-import os
-
-# Create combined HTML content including the requested items:
-# 1. macOS Homebrew & PATH setup steps
-# 2. cd / Documents folder navigation guide (specifically cd ~/Documents)
-# 3. Handling file names with spaces ("我的影片 3.m4a")
-# 4. Correcting typos (brew vs rew)
-# 5. Full integrated existing HTML content
-
-html_content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
@@ -353,10 +344,3 @@ ffmpeg -i "我的影片 3.m4a" -c:a libmp3lame -b:a 128k "我的影片 3.mp3"</p
   </div>
 </body>
 </html>
-"""
-
-output_path = "ffmpeg-cheatsheet.html"
-with open(output_path, "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-print(f"File generated successfully: {output_path}")
